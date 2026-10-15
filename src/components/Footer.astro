@@ -1,0 +1,217 @@
+---
+import { getCollection } from 'astro:content';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { ENTREPRISE, telHref } from '../data/entreprise';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.ordre - b.data.ordre);
+const villes = (await getCollection('villes')).sort((a, b) => a.data.nom.localeCompare(b.data.nom, 'fr'));
+const annee = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="footer-logo" href="/">
+          <Logo class="footer-mono" />
+          <span>
+            <strong>{ENTREPRISE.nom}</strong>
+            <small>{ENTREPRISE.signature}</small>
+          </span>
+        </a>
+        <p>
+          Électricien à Castries (34160), au service des particuliers et des professionnels de Montpellier et de sa
+          périphérie : dépannage, installation, automatismes et courant faible.
+        </p>
+        <a class="footer-phone" href={telHref}>
+          <Icon name="phone" size={20} />
+          {ENTREPRISE.telephone}
+        </a>
+        <ul class="footer-hours">
+          {
+            ENTREPRISE.horaires.map((h) => (
+              <li>
+                <span>{h.jours}</span>
+                <span>{h.heures}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <nav class="footer-col" aria-label="Services">
+        <p class="footer-title">Services</p>
+        <ul>
+          {
+            services.map((s) => (
+              <li>
+                <a href={`/services/${s.id}/`}>{s.data.nomCourt}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="Zones d’intervention">
+        <p class="footer-title">Zones d’intervention</p>
+        <ul>
+          {
+            villes.map((v) => (
+              <li>
+                <a href={`/electricien-${v.id}/`}>Électricien {v.data.nom}</a>
+              </li>
+            ))
+          }
+          <li><a href="/zones-intervention/">Toutes les communes</a></li>
+        </ul>
+      </nav>
+
+      <nav class="footer-col" aria-label="Informations">
+        <p class="footer-title">Informations</p>
+        <ul>
+          <li><a href="/contact/">Contact & devis gratuit</a></li>
+          <li><a href="/conseils/">Conseils électricité</a></li>
+          <li><a href="/mentions-legales/">Mentions légales</a></li>
+          <li><a href="/confidentialite/">Politique de confidentialité</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© {annee} {ENTREPRISE.nom} — Électricien à Castries, Montpellier et alentours (Hérault, 34).</p>
+      <p>Urgence sur le réseau public (Enedis, Hérault) : <a href="tel:+33972675034">09 72 67 50 34</a></p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(3.5rem, 7vw, 5.5rem) 0 2rem;
+    background: var(--ink);
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+  }
+  .site-footer::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--red), transparent);
+    opacity: 0.6;
+  }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1.25rem;
+    color: #fff;
+    text-decoration: none;
+  }
+  .footer-logo :global(.footer-mono) {
+    width: 54px;
+    color: var(--red);
+  }
+  .footer-logo strong {
+    display: block;
+    font-size: 1.35rem;
+    font-stretch: 125%;
+    letter-spacing: 0.04em;
+  }
+  .footer-logo small {
+    display: block;
+    max-width: 220px;
+    font-size: 0.75rem;
+    line-height: 1.35;
+    color: var(--ink-muted);
+  }
+  .footer-brand p {
+    max-width: 380px;
+  }
+  .footer-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0.5rem 0 1rem;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-stretch: 115%;
+    text-decoration: none;
+  }
+  .footer-phone :global(svg) {
+    color: var(--red-bright);
+  }
+  .footer-hours {
+    display: grid;
+    gap: 0.25rem;
+    max-width: 340px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .footer-hours li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px dashed var(--ink-line);
+  }
+  .footer-hours li span:last-child {
+    color: #fff;
+  }
+  .footer-title {
+    margin: 0 0 1rem;
+    color: #fff;
+    font-weight: 700;
+    font-stretch: 110%;
+  }
+  .footer-col ul {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .footer-col a {
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover,
+  .footer-bottom a:hover {
+    color: #fff;
+  }
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ink-line);
+    font-size: 0.85rem;
+  }
+  .footer-bottom p {
+    margin: 0;
+  }
+  @media (max-width: 960px) {
+    .footer-top {
+      grid-template-columns: 1fr 1fr;
+    }
+    .footer-brand {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 560px) {
+    .footer-top {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

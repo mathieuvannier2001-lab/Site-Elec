@@ -1,0 +1,186 @@
+---
+/** Carte stylisée de la zone d'intervention, centrée sur Castries. */
+import { getCollection } from 'astro:content';
+import { COMMUNES } from '../data/communes';
+import { ENTREPRISE } from '../data/entreprise';
+
+const avecPage = new Set((await getCollection('villes')).map((v) => v.id));
+
+const LNG0 = 3.765;
+const LAT1 = 43.775;
+const S = 2000; // pixels par degré de latitude
+const COS = Math.cos((43.65 * Math.PI) / 180);
+const px = (lng: number) => 40 + (lng - LNG0) * S * COS;
+const py = (lat: number) => 30 + (LAT1 - lat) * S;
+const KM = S / 111;
+
+const cx = px(ENTREPRISE.geo.lng);
+const cy = py(ENTREPRISE.geo.lat);
+
+const points = COMMUNES.filter((c) => c.slug !== 'castries').map((c) => ({
+  ...c,
+  x: px(c.lng),
+  y: py(c.lat),
+  page: avecPage.has(c.slug),
+}));
+
+// Décalage des étiquettes pour éviter les chevauchements.
+const decalage: Record<string, [number, number, 'start' | 'end' | 'middle']> = {
+  montpellier: [0, 30, 'middle'],
+  'le-cres': [0, 22, 'middle'],
+  vendargues: [10, 16, 'start'],
+  'castelnau-le-lez': [-10, 4, 'end'],
+  jacou: [0, -12, 'middle'],
+  clapiers: [-10, 4, 'end'],
+  teyran: [0, -14, 'middle'],
+  baillargues: [10, 16, 'start'],
+  'saint-aunes': [10, 16, 'start'],
+  mauguio: [10, 4, 'start'],
+  lattes: [10, 4, 'start'],
+};
+---
+
+<figure class="zone-map">
+  <svg viewBox="0 0 500 600" role="img" aria-labelledby="carte-titre carte-desc">
+    <title id="carte-titre">Zone d’intervention d’AMCF autour de Castries</title>
+    <desc id="carte-desc">
+      Carte schématique : Castries au centre, Montpellier au sud-ouest, et les communes desservies dans un rayon
+      d’environ 20 km.
+    </desc>
+    <defs>
+      <radialGradient id="zm-glow">
+        <stop offset="0" stop-color="#d22e24" stop-opacity=".35"></stop>
+        <stop offset="1" stop-color="#d22e24" stop-opacity="0"></stop>
+      </radialGradient>
+      <pattern id="zm-grid" width="25" height="25" patternUnits="userSpaceOnUse">
+        <path d="M25 0H0V25" fill="none" stroke="rgba(255,255,255,.04)"></path>
+      </pattern>
+    </defs>
+    <rect width="500" height="600" fill="url(#zm-grid)"></rect>
+    <circle cx={cx} cy={cy} r={20 * KM} fill="url(#zm-glow)"></circle>
+    {
+      [5, 10, 15, 20].map((km) => (
+        <g>
+          <circle cx={cx} cy={cy} r={km * KM} class="zm-ring" />
+          {km > 5 && (
+            <text x={cx} y={cy + km * KM - 5} text-anchor="middle" class="zm-km">
+              {km} km
+            </text>
+          )}
+        </g>
+      ))
+    }
+    {
+      points.map((p) => (
+        <line x1={cx} y1={cy} x2={p.x} y2={p.y} class={p.page ? 'zm-link zm-link--on' : 'zm-link'} />
+      ))
+    }
+    {
+      points.map((p) => {
+        const [dx, dy, anchor] = decalage[p.slug] ?? [8, 4, 'start'];
+        const dot = (
+          <g class={p.page ? 'zm-pt zm-pt--on' : 'zm-pt'}>
+            <circle cx={p.x} cy={p.y} r={p.slug === 'montpellier' ? 9 : p.page ? 5.5 : 3.5} />
+            {p.page && (
+              <text x={p.x + dx} y={p.y + dy} text-anchor={anchor} class={p.slug === 'montpellier' ? 'zm-big' : ''}>
+                {p.nom}
+              </text>
+            )}
+            <title>{p.nom}</title>
+          </g>
+        );
+        return p.page ? <a href={`/electricien-${p.slug}/`}>{dot}</a> : dot;
+      })
+    }
+    <a href="/electricien-castries/">
+      <circle cx={cx} cy={cy} r="22" class="zm-pulse"></circle>
+      <circle cx={cx} cy={cy} r="11" fill="#d22e24" stroke="#fff" stroke-width="3"></circle>
+      <text x={cx + 18} y={cy - 16} class="zm-home">Castries</text>
+    </a>
+  </svg>
+  <figcaption>Carte schématique — rayon d’intervention d’environ {ENTREPRISE.rayonKm} km autour de Castries.</figcaption>
+</figure>
+
+<style>
+  .zone-map {
+    margin: 0;
+    padding: 1rem;
+    border: 1px solid var(--ink-line);
+    border-radius: var(--radius-lg);
+    background: var(--ink-2);
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    font-family: var(--font);
+  }
+  figcaption {
+    padding: 0.5rem 0.5rem 0.25rem;
+    color: var(--ink-muted);
+    font-size: 0.8rem;
+  }
+  .zm-ring {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.12);
+    stroke-dasharray: 3 6;
+  }
+  .zm-km {
+    fill: rgba(255, 255, 255, 0.35);
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .zm-link {
+    stroke: rgba(255, 255, 255, 0.05);
+  }
+  .zm-link--on {
+    stroke: rgba(255, 82, 69, 0.25);
+  }
+  .zm-pt circle {
+    fill: rgba(255, 255, 255, 0.35);
+  }
+  .zm-pt--on circle {
+    fill: #fff;
+    stroke: #ff5245;
+    stroke-width: 2;
+    transition: r 0.2s;
+  }
+  .zm-pt text {
+    fill: #e9e8e4;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .zm-pt text.zm-big {
+    font-size: 17px;
+    font-weight: 800;
+    font-stretch: 115%;
+    fill: #fff;
+  }
+  a:hover .zm-pt--on circle {
+    fill: #ff5245;
+  }
+  a:hover .zm-pt text {
+    fill: #ff5245;
+  }
+  .zm-home {
+    fill: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    font-stretch: 118%;
+  }
+  .zm-pulse {
+    fill: rgba(210, 46, 36, 0.35);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: zm-pulse 2.2s ease-out infinite;
+  }
+  @keyframes zm-pulse {
+    0% {
+      transform: scale(0.5);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.8);
+      opacity: 0;
+    }
+  }
+</style>

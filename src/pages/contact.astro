@@ -1,0 +1,379 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import { ENTREPRISE, telHref } from '../data/entreprise';
+import { COMMUNES } from '../data/communes';
+import * as ld from '../lib/schema';
+
+const site = Astro.site!;
+const path = '/contact/';
+const services = (await getCollection('services')).sort((a, b) => a.data.ordre - b.data.ordre);
+
+const titre = 'Contact & devis gratuit – Électricien Castries | AMCF';
+const description = `Appelez AMCF au ${ENTREPRISE.telephone} ou demandez un devis gratuit en ligne. Électricien à Castries, intervention à Montpellier et alentours, 7j/7 sur demande.`;
+const fil = [
+  { nom: 'Accueil', path: '/' },
+  { nom: 'Contact', path },
+];
+const schema = [
+  ld.entreprise(site),
+  ld.pageWeb(site, { path, titre, description, type: 'ContactPage', avecFilAriane: true }),
+  ld.filAriane(site, path, fil),
+];
+---
+
+<Base titre={titre} description={description} schema={schema}>
+  <PageHero
+    eyebrow="Contact"
+    titre="Parlons de votre projet"
+    lead="Pour un dépannage, le plus rapide est de nous appeler. Pour des travaux, décrivez votre besoin : nous vous rappelons pour établir un devis gratuit."
+    fil={fil}
+    ctas={false}
+  />
+
+  <section class="section">
+    <div class="container contact-grid">
+      <div class="infos">
+        <a class="info-call" href={telHref}>
+          <span class="info-call-icon"><Icon name="phone" size={28} /></span>
+          <span>
+            <small>Appel direct — {ENTREPRISE.disponibilite.toLowerCase()}</small>
+            <strong>{ENTREPRISE.telephone}</strong>
+          </span>
+        </a>
+
+        <div class="info-card">
+          <h2 class="info-title"><Icon name="clock" size={20} /> Horaires</h2>
+          <ul class="hours">
+            {
+              ENTREPRISE.horaires.map((h) => (
+                <li>
+                  <span>{h.jours}</span>
+                  <strong>{h.heures}</strong>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="info-card">
+          <h2 class="info-title"><Icon name="pin" size={20} /> Zone d’intervention</h2>
+          <p>
+            Basé à {ENTREPRISE.adresse.ville} ({ENTREPRISE.adresse.codePostal}), nous intervenons à Montpellier et dans un rayon
+            d’environ {ENTREPRISE.rayonKm} km. <a href="/zones-intervention/">Voir les communes</a>
+          </p>
+        </div>
+
+        {
+          ENTREPRISE.email && (
+            <div class="info-card">
+              <h2 class="info-title">
+                <Icon name="mail" size={20} /> E-mail
+              </h2>
+              <p>
+                <a href={`mailto:${ENTREPRISE.email}`}>{ENTREPRISE.email}</a>
+              </p>
+            </div>
+          )
+        }
+      </div>
+
+      <div class="form-card" id="devis">
+        <h2>Demande de devis gratuit</h2>
+        <p class="form-intro">Réponse rapide. Les champs marqués d’un * sont obligatoires.</p>
+
+        <form name="devis" method="POST" action="/merci/" data-netlify="true" netlify-honeypot="bot-field" class="form">
+          <input type="hidden" name="form-name" value="devis" />
+          <p class="hp" aria-hidden="true">
+            <label>Ne pas remplir : <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
+          </p>
+
+          <fieldset class="choice">
+            <legend>Type de demande *</legend>
+            <label class="choice-item">
+              <input type="radio" name="type" value="Dépannage" required />
+              <span><Icon name="bolt" size={18} /> Dépannage</span>
+            </label>
+            <label class="choice-item">
+              <input type="radio" name="type" value="Travaux / devis" />
+              <span><Icon name="file" size={18} /> Travaux / devis</span>
+            </label>
+          </fieldset>
+
+          <div class="row-2">
+            <div class="field">
+              <label for="nom">Nom *</label>
+              <input id="nom" name="nom" type="text" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label for="telephone">Téléphone *</label>
+              <input id="telephone" name="telephone" type="tel" autocomplete="tel" inputmode="tel" required />
+            </div>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label for="email">E-mail</label>
+              <input id="email" name="email" type="email" autocomplete="email" />
+            </div>
+            <div class="field">
+              <label for="commune">Commune *</label>
+              <input id="commune" name="commune" type="text" list="liste-communes" autocomplete="address-level2" required />
+              <datalist id="liste-communes">
+                {COMMUNES.map((c) => <option value={c.nom} />)}
+              </datalist>
+            </div>
+          </div>
+          <div class="field">
+            <label for="prestation">Prestation concernée</label>
+            <select id="prestation" name="prestation">
+              <option value="">Choisir…</option>
+              {services.map((s) => <option value={s.data.nomCourt}>{s.data.nomCourt}</option>)}
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="message">Votre besoin *</label>
+            <textarea
+              id="message"
+              name="message"
+              rows="5"
+              required
+              placeholder="Ex. : le disjoncteur de la cuisine saute dès que j’allume le four…"></textarea>
+          </div>
+          <label class="consent">
+            <input type="checkbox" name="consentement" value="oui" required />
+            <span>
+              J’accepte que mes données soient utilisées pour être recontacté au sujet de ma demande. Voir la
+              <a href="/confidentialite/">politique de confidentialité</a>. *
+            </span>
+          </label>
+          <button class="btn btn--red btn--lg submit" type="submit">
+            Envoyer ma demande <Icon name="arrow" size={18} class="icon-arrow" />
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .infos {
+    display: grid;
+    gap: 1rem;
+  }
+  .info-call {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    padding: 1.75rem;
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(320px 200px at 100% 0%, rgba(210, 46, 36, 0.45), transparent 70%),
+      var(--ink);
+    color: #fff;
+    text-decoration: none;
+  }
+  .info-call-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 62px;
+    height: 62px;
+    border-radius: 18px;
+    background: var(--red);
+  }
+  .info-call small {
+    display: block;
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+  }
+  .info-call strong {
+    display: block;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-stretch: 118%;
+    line-height: 1.15;
+  }
+  .info-card {
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .info-card p {
+    margin: 0;
+    color: var(--muted);
+  }
+  .info-card a {
+    color: var(--red-dark);
+    font-weight: 700;
+  }
+  .info-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+  .info-title :global(svg) {
+    color: var(--red);
+  }
+  .hours {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .hours li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .hours span {
+    color: var(--muted);
+  }
+
+  .form-card {
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: var(--paper);
+  }
+  .form-card h2 {
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    margin-bottom: 0.25rem;
+  }
+  .form-intro {
+    color: var(--muted);
+  }
+  .form {
+    display: grid;
+    gap: 1.1rem;
+    margin-top: 1.5rem;
+  }
+  .hp {
+    position: absolute;
+    left: -9999px;
+  }
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem;
+  }
+  .field {
+    display: grid;
+    gap: 0.4rem;
+  }
+  label,
+  legend {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  input:not([type='radio'], [type='checkbox']),
+  select,
+  textarea {
+    width: 100%;
+    min-height: 52px;
+    padding: 0.8rem 1rem;
+    border: 1px solid #d6d3cc;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 1rem;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+  textarea {
+    resize: vertical;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--red);
+    box-shadow: 0 0 0 4px rgba(210, 46, 36, 0.15);
+  }
+  .choice {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .choice legend {
+    margin-bottom: 0.5rem;
+  }
+  .choice-item {
+    position: relative;
+  }
+  .choice-item input {
+    position: absolute;
+    opacity: 0;
+  }
+  .choice-item span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 54px;
+    border: 1px solid #d6d3cc;
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+    transition:
+      border-color 0.2s,
+      background-color 0.2s,
+      color 0.2s;
+  }
+  .choice-item input:checked + span {
+    border-color: var(--red);
+    background: var(--red-soft);
+    color: var(--red-dark);
+  }
+  .choice-item input:focus-visible + span {
+    outline: 3px solid var(--red);
+    outline-offset: 2px;
+  }
+  .consent {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    font-weight: 400;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .consent input {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 0.15rem;
+    accent-color: var(--red);
+  }
+  .consent a {
+    color: var(--red-dark);
+  }
+  .submit {
+    justify-self: start;
+  }
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .row-2 {
+      grid-template-columns: 1fr;
+    }
+    .submit {
+      width: 100%;
+    }
+  }
+</style>

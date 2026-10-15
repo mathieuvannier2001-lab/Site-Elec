@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { ENTREPRISE } from '../data/entreprise';
+import * as ld from '../lib/schema';
+
+const site = Astro.site!;
+const path = '/mentions-legales/';
+const titre = 'Mentions légales | AMCF';
+const description = 'Mentions légales du site AMCF, électricien à Castries (34160) : éditeur, hébergeur, assurance et médiation de la consommation.';
+const fil = [
+  { nom: 'Accueil', path: '/' },
+  { nom: 'Mentions légales', path },
+];
+const L = ENTREPRISE.legal;
+const a = ENTREPRISE.adresse;
+---
+
+<Base
+  titre={titre}
+  description={description}
+  schema={[ld.pageWeb(site, { path, titre, description, avecFilAriane: true }), ld.filAriane(site, path, fil)]}
+>
+  <PageHero titre="Mentions légales" fil={fil} ctas={false} />
+  <section class="section">
+    <div class="container">
+      <div class="prose">
+        <h2>Éditeur du site</h2>
+        <p>
+          <strong>{ENTREPRISE.nomLong}</strong><br />
+          {L.formeJuridique}<br />
+          {a.rue && <>{a.rue}<br /></>}
+          {a.codePostal} {a.ville}, France<br />
+          Téléphone : {ENTREPRISE.telephone}<br />
+          {ENTREPRISE.email && <>E-mail : {ENTREPRISE.email}<br /></>}
+          SIRET : {L.siret}<br />
+          Immatriculation : {L.rcsOuRm}<br />
+          TVA intracommunautaire : {L.tva}
+        </p>
+        <p>Directeur de la publication : {L.dirigeant}</p>
+
+        <h2>Assurance professionnelle</h2>
+        <p>{L.assurance}</p>
+
+        <h2>Hébergement</h2>
+        <p>
+          {ENTREPRISE.hebergeur.nom}<br />
+          {ENTREPRISE.hebergeur.adresse}<br />
+          <a href={ENTREPRISE.hebergeur.site} rel="noopener">{ENTREPRISE.hebergeur.site}</a>
+        </p>
+
+        <h2>Médiation de la consommation</h2>
+        <p>
+          Conformément aux articles L.612-1 et suivants du Code de la consommation, en cas de litige non résolu
+          directement avec nous, le client consommateur peut recourir gratuitement au médiateur de la consommation
+          suivant : {L.mediateur}.
+        </p>
+
+        <h2>Propriété intellectuelle</h2>
+        <p>
+          L’ensemble des contenus de ce site (textes, logo, illustrations) est la propriété de {ENTREPRISE.nom}, sauf mention
+          contraire. Toute reproduction sans autorisation préalable est interdite.
+        </p>
+        <p>
+          Police de caractères : Archivo, sous licence SIL Open Font License 1.1.
+        </p>
+
+        <h2>Données personnelles</h2>
+        <p>
+          Le traitement des données transmises via le formulaire de contact est décrit dans notre
+          <a href="/confidentialite/">politique de confidentialité</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,140 @@
+---
+/** Bandeau d'appel à l'action placé en bas des pages. */
+import Icon from './Icon.astro';
+import { ENTREPRISE, telHref } from '../data/entreprise';
+
+interface Props {
+  titre?: string;
+  texte?: string;
+}
+const {
+  titre = 'Un problème électrique ? Parlons-en maintenant.',
+  texte = 'Dépannage, devis ou simple question : un électricien vous répond directement, 7 jours sur 7 sur demande, à Castries, Montpellier et dans toute la périphérie.',
+} = Astro.props;
+---
+
+<section class="cta-band" aria-labelledby="cta-titre">
+  <div class="container">
+    <div class="cta-card reveal">
+      <svg class="cta-trace" viewBox="0 0 1200 300" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 220 H260 L300 180 H520 L560 220 H760 L800 140 H1200" />
+        <path class="cta-pulse" d="M0 220 H260 L300 180 H520 L560 220 H760 L800 140 H1200" />
+      </svg>
+      <div class="cta-content">
+        <h2 id="cta-titre">{titre}</h2>
+        <p>{texte}</p>
+      </div>
+      <div class="cta-actions">
+        <a class="cta-phone" href={telHref}>
+          <span class="cta-phone-icon"><Icon name="phone" size={26} /></span>
+          <span>
+            <small>Appel direct</small>
+            <strong>{ENTREPRISE.telephone}</strong>
+          </span>
+        </a>
+        <a class="btn btn--white btn--lg" href="/contact/#devis">
+          Demander un devis gratuit <Icon name="arrow" size={18} class="icon-arrow" />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    padding-block: clamp(3rem, 7vw, 6rem);
+  }
+  .cta-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    overflow: hidden;
+    padding: clamp(2rem, 5vw, 4rem);
+    border-radius: 32px;
+    background:
+      radial-gradient(700px 400px at 100% 0%, rgba(210, 46, 36, 0.45), transparent 65%),
+      var(--ink);
+    color: var(--ink-text);
+    isolation: isolate;
+  }
+  .cta-trace {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.07);
+    stroke-width: 2;
+  }
+  .cta-pulse {
+    stroke: var(--red-bright);
+    stroke-width: 2.5;
+    stroke-dasharray: 120 1600;
+    animation: flow 5s linear infinite;
+    filter: drop-shadow(0 0 6px var(--red-bright));
+  }
+  @keyframes flow {
+    from {
+      stroke-dashoffset: 1720;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  .cta-content h2 {
+    color: #fff;
+    max-width: 18ch;
+  }
+  .cta-content p {
+    max-width: 52ch;
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 1.1rem;
+  }
+  .cta-actions {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+  .cta-phone {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #fff;
+    text-decoration: none;
+  }
+  .cta-phone-icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: var(--red);
+    box-shadow: 0 0 0 8px rgba(210, 46, 36, 0.18);
+    transition: transform 0.3s var(--ease);
+  }
+  .cta-phone:hover .cta-phone-icon {
+    transform: rotate(-8deg) scale(1.05);
+  }
+  .cta-phone small {
+    display: block;
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .cta-phone strong {
+    display: block;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-stretch: 118%;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  @media (max-width: 860px) {
+    .cta-card {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { ENTREPRISE, telHref } from '../data/entreprise';
+---
+
+<Base titre="Demande envoyée | AMCF" description="Votre demande a bien été envoyée à AMCF." noindex>
+  <section class="section merci">
+    <div class="container merci-inner">
+      <span class="merci-icon"><Icon name="check" size={40} strokeWidth={2.5} /></span>
+      <h1>Merci, votre demande est bien envoyée.</h1>
+      <p class="lead">Nous vous rappelons dans les meilleurs délais. Pour une urgence, appelez directement :</p>
+      <div class="btn-row merci-ctas">
+        <a class="btn btn--red btn--lg" href={telHref}><Icon name="phone" size={20} /> {ENTREPRISE.telephone}</a>
+        <a class="btn btn--ghost btn--lg" href="/">Retour à l’accueil</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .merci-inner {
+    max-width: 720px;
+    text-align: center;
+  }
+  .merci-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 88px;
+    height: 88px;
+    margin-bottom: 1.5rem;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 0 0 12px var(--red-soft);
+  }
+  .merci h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+  .merci-ctas {
+    justify-content: center;
+  }
+</style>

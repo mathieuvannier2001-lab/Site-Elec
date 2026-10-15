@@ -1,0 +1,883 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import PanelIllustration from '../components/PanelIllustration.astro';
+import ZoneMap from '../components/ZoneMap.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { ENTREPRISE, telHref } from '../data/entreprise';
+import * as ld from '../lib/schema';
+
+const site = Astro.site!;
+const services = (await getCollection('services')).sort((a, b) => a.data.ordre - b.data.ordre);
+const villes = (await getCollection('villes')).sort((a, b) => a.data.nom.localeCompare(b.data.nom, 'fr'));
+const conseils = (await getCollection('conseils')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()).slice(0, 3);
+
+const titre = 'Électricien Castries & Montpellier – Dépannage 7j/7 | AMCF';
+const description =
+  'AMCF, électricien à Castries : dépannage 7j/7 sur demande, tableau, mise aux normes, portail, courant faible. Montpellier et alentours. Devis gratuit.';
+
+const metiers = [
+  { lettre: 'A', nom: 'Automatisme', texte: 'Portails, volets roulants, portes de garage : installation, réglage et dépannage.', lien: '/services/automatismes-portail-volets/' },
+  { lettre: 'M', nom: 'Maintenance', texte: 'Entretien et dépannage des installations des particuliers et des professionnels.', lien: '/services/maintenance-electrique-professionnels/' },
+  { lettre: 'C', nom: 'Courant fort', texte: 'Tableau, circuits, prises, éclairage, chauffage : l’électricité de tout le bâtiment.', lien: '/services/installation-renovation-electrique/' },
+  { lettre: 'F', nom: 'Courant faible', texte: 'Réseau informatique, interphone, alarme, vidéosurveillance, TV et fibre.', lien: '/services/courant-faible/' },
+];
+
+const etapes = [
+  { icone: 'phone', titre: 'Vous appelez', texte: 'Vous décrivez la situation à l’électricien qui interviendra. Pas de standard, pas d’intermédiaire.' },
+  { icone: 'route', titre: 'Nous intervenons', texte: 'Un créneau rapide est fixé ensemble, y compris le week-end sur demande pour les dépannages.' },
+  { icone: 'file', titre: 'Diagnostic & prix', texte: 'Nous trouvons l’origine du problème et vous annonçons le prix avant de commencer.' },
+  { icone: 'check', titre: 'Travail soigné', texte: 'Réparation conforme aux normes, chantier propre, explications claires en partant.' },
+];
+
+const engagements = [
+  { icone: 'file', titre: 'Devis gratuit et détaillé', texte: 'Chaque poste est chiffré et expliqué. Vous décidez en connaissance de cause.' },
+  { icone: 'clock', titre: '7 jours sur 7', texte: 'Joignable toute la semaine, dépannage le week-end sur demande.' },
+  { icone: 'shield', titre: 'Norme NF C 15-100', texte: 'Des travaux conformes, réalisés avec du matériel de marques reconnues.' },
+  { icone: 'user', titre: 'Un interlocuteur unique', texte: 'L’électricien que vous avez au téléphone est celui qui vient chez vous.' },
+  { icone: 'sparkles', titre: 'Chantier propre', texte: 'Protection des sols et des meubles, nettoyage en fin d’intervention.' },
+  { icone: 'building', titre: 'Particuliers & pros', texte: 'Maisons, appartements, commerces, bureaux et locaux d’activité.' },
+];
+
+const faq = [
+  {
+    q: 'Dans quelles communes intervenez-vous ?',
+    r: 'AMCF est basé à Castries (34160) et intervient à Montpellier et dans toute sa périphérie : Le Crès, Vendargues, Castelnau-le-Lez, Jacou, Teyran, Clapiers, Baillargues, Saint-Aunès, Mauguio, Lattes et les villages alentour, dans un rayon d’environ 30 km.',
+  },
+  {
+    q: 'Êtes-vous disponible le soir et le week-end ?',
+    r: 'Oui. Nous sommes joignables toute la semaine et assurons les dépannages le samedi et le dimanche sur demande. Appelez le 06 65 95 33 04 pour convenir d’un créneau.',
+  },
+  {
+    q: 'Le devis est-il gratuit ?',
+    r: 'Oui, le devis est gratuit et détaillé pour tous les travaux (tableau, rénovation, mise aux normes, automatismes, borne de recharge…). Pour un dépannage, le prix est annoncé au téléphone avant le déplacement.',
+  },
+  {
+    q: 'Que veut dire « courant fort et faible » ?',
+    r: 'Le courant fort, c’est l’alimentation électrique classique : tableau, prises, éclairage, chauffage. Le courant faible regroupe les réseaux de communication : informatique, téléphone, télévision, interphone, alarme et vidéosurveillance. AMCF maîtrise les deux.',
+  },
+  {
+    q: 'Travaillez-vous pour les professionnels ?',
+    r: 'Oui : commerces, restaurants, bureaux, cabinets et locaux d’activité. Nous assurons le dépannage, la maintenance, la levée des réserves de vérification, l’éclairage et le courant faible, avec des horaires adaptés à votre activité.',
+  },
+  {
+    q: 'Que faire en attendant l’électricien en cas de panne ?',
+    r: 'En cas d’odeur de brûlé ou de fumée, coupez le disjoncteur général et ne touchez à rien. Si tout le quartier est privé de courant, la panne vient du réseau : contactez Enedis au 09 72 67 50 34. Sinon, appelez-nous.',
+  },
+];
+
+const catalogue = services.map((s) => ({ nom: s.data.nomCourt, url: ld.abs(site, `/services/${s.id}/`) }));
+const schema = [
+  ld.entreprise(site, catalogue),
+  ld.siteWeb(site),
+  ld.pageWeb(site, { path: '/', titre, description }),
+  ld.faq(site, '/', faq)!,
+];
+---
+
+<Base titre={titre} description={description} schema={schema}>
+  <!-- ═══════════════ HÉROS ═══════════════ -->
+  <section class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <p class="status"><span class="status-dot"></span>{ENTREPRISE.disponibilite}</p>
+        <h1>
+          Électricien à <span class="hl">Castries</span> <span class="amp">&amp;</span> Montpellier
+        </h1>
+        <p class="hero-lead">
+          Dépannage électrique, tableau, mise aux normes, automatismes et courant faible. <strong>AMCF</strong> intervient
+          chez les particuliers et les professionnels de Montpellier et de toute sa périphérie.
+        </p>
+        <div class="btn-row hero-ctas">
+          <a class="btn btn--red btn--lg" href={telHref}>
+            <Icon name="phone" size={20} /> Appeler le {ENTREPRISE.telephone}
+          </a>
+          <a class="btn btn--ghost-light btn--lg" href="/contact/#devis">
+            Devis gratuit <Icon name="arrow" size={18} class="icon-arrow" />
+          </a>
+        </div>
+        <ul class="hero-trust">
+          <li><Icon name="clock" size={18} /> 7j/7 sur demande</li>
+          <li><Icon name="file" size={18} /> Devis gratuit</li>
+          <li><Icon name="pin" size={18} /> Basé à Castries</li>
+          <li><Icon name="building" size={18} /> Particuliers & pros</li>
+        </ul>
+      </div>
+      <div class="hero-visual">
+        <PanelIllustration />
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 4 MÉTIERS ═══════════════ -->
+  <section class="section section--tight metiers" aria-labelledby="metiers-titre">
+    <div class="container">
+      <div class="metiers-head reveal">
+        <h2 id="metiers-titre">AMCF, quatre métiers sous un même nom</h2>
+        <p>Automatisme, Maintenance, Courant fort et Faible : un seul électricien pour toute votre installation, du tableau jusqu’à la dernière prise réseau.</p>
+      </div>
+      <ol class="metiers-grid">
+        {
+          metiers.map((m, i) => (
+            <li class="reveal" style={`--d:${i * 0.08}s`}>
+              <a href={m.lien} class="metier">
+                <span class="metier-lettre" aria-hidden="true">{m.lettre}</span>
+                <h3>{m.nom}</h3>
+                <p>{m.texte}</p>
+                <Icon name="arrow" size={18} class="metier-arrow" />
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- ═══════════════ SERVICES ═══════════════ -->
+  <section class="section section--paper" id="services" aria-labelledby="services-titre">
+    <div class="container">
+      <div class="section-head reveal">
+        <p class="eyebrow">Nos services</p>
+        <h2 id="services-titre">Tous vos travaux d’électricité, du dépannage à la rénovation</h2>
+        <p>
+          Particulier ou professionnel, à Castries, Montpellier ou dans les communes voisines : nous intervenons sur
+          l’ensemble de votre installation électrique.
+        </p>
+      </div>
+      <ul class="services-grid">
+        {
+          services.map((s, i) => (
+            <li class="reveal" style={`--d:${(i % 3) * 0.08}s`}>
+              <a class="service-card" href={`/services/${s.id}/`}>
+                <span class="icon-tile">
+                  <Icon name={s.data.icone} size={26} />
+                </span>
+                <span class="service-cat">{s.data.categorie}</span>
+                <h3>{s.data.nomCourt}</h3>
+                <p>{s.data.resume}</p>
+                <span class="link-arrow">
+                  En savoir plus <Icon name="arrow" size={18} />
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════ URGENCE ═══════════════ -->
+  <section class="section" aria-labelledby="urgence-titre">
+    <div class="container urgence">
+      <div class="urgence-card reveal">
+        <div class="urgence-head">
+          <span class="urgence-icon"><Icon name="alert" size={28} /></span>
+          <div>
+            <p class="eyebrow">Panne de courant</p>
+            <h2 id="urgence-titre">Les bons réflexes en attendant l’électricien</h2>
+          </div>
+        </div>
+        <ol class="urgence-steps">
+          <li>
+            <strong>Mettez-vous en sécurité</strong>
+            <span>Odeur de brûlé, fumée, étincelles ? Coupez le disjoncteur général et ne touchez à rien. En cas de danger : 18 ou 112.</span>
+          </li>
+          <li>
+            <strong>Regardez chez les voisins</strong>
+            <span>Tout le quartier est dans le noir ? La panne vient du réseau : Enedis Hérault au <a href="tel:+33972675034">09 72 67 50 34</a>.</span>
+          </li>
+          <li>
+            <strong>Vérifiez votre tableau</strong>
+            <span>Un disjoncteur baissé ? Réarmez-le une fois. S’il saute à nouveau, débranchez les appareils et <a href="/conseils/disjoncteur-qui-saute/">suivez notre méthode</a>.</span>
+          </li>
+        </ol>
+        <div class="urgence-cta">
+          <p>Le problème persiste ? Nous intervenons 7j/7 sur demande.</p>
+          <a class="btn btn--red btn--lg" href={telHref}>
+            <Icon name="phone" size={20} /> {ENTREPRISE.telephone}
+          </a>
+        </div>
+      </div>
+
+      <div class="process reveal">
+        <p class="eyebrow">Comment ça se passe</p>
+        <h2>Simple, rapide et transparent</h2>
+        <ol class="process-list">
+          {
+            etapes.map((e, i) => (
+              <li>
+                <span class="process-num">{String(i + 1).padStart(2, '0')}</span>
+                <span class="process-icon">
+                  <Icon name={e.icone} size={22} />
+                </span>
+                <div>
+                  <h3>{e.titre}</h3>
+                  <p>{e.texte}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ ZONE ═══════════════ -->
+  <section class="section section--dark zone" id="zone" aria-labelledby="zone-titre">
+    <div class="container zone-grid">
+      <div class="reveal">
+        <p class="eyebrow">Zone d’intervention</p>
+        <h2 id="zone-titre">Castries, Montpellier et toute la périphérie</h2>
+        <p class="zone-text">
+          Basés à Castries, nous rejoignons Montpellier en une vingtaine de minutes et intervenons dans un rayon d’environ
+          {ENTREPRISE.rayonKm} km : est et nord montpelliérain, Lez, littoral et villages de garrigue.
+        </p>
+        <ul class="chips zone-chips">
+          {
+            villes.map((v) => (
+              <li>
+                <a class="chip chip--dark" href={`/electricien-${v.id}/`}>
+                  <Icon name="pin" size={15} /> {v.data.nom}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <a class="link-arrow link-arrow--light" href="/zones-intervention/">
+          Voir toutes les communes desservies <Icon name="arrow" size={18} />
+        </a>
+      </div>
+      <div class="reveal" style="--d:.1s">
+        <ZoneMap />
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ ENGAGEMENTS ═══════════════ -->
+  <section class="section" aria-labelledby="engagements-titre">
+    <div class="container">
+      <div class="section-head section-head--center reveal">
+        <p class="eyebrow">Nos engagements</p>
+        <h2 id="engagements-titre">Pourquoi faire appel à AMCF ?</h2>
+      </div>
+      <ul class="engagements">
+        {
+          engagements.map((e, i) => (
+            <li class="reveal" style={`--d:${(i % 3) * 0.08}s`}>
+              <span class="icon-tile">
+                <Icon name={e.icone} size={24} />
+              </span>
+              <div>
+                <h3>{e.titre}</h3>
+                <p>{e.texte}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Faq items={faq} titre="Vos questions, nos réponses" intro="Les questions qu’on nous pose le plus souvent avant une intervention." />
+
+  <!-- ═══════════════ CONSEILS ═══════════════ -->
+  <section class="section" aria-labelledby="conseils-titre">
+    <div class="container">
+      <div class="conseils-head reveal">
+        <div>
+          <p class="eyebrow">Conseils d’électricien</p>
+          <h2 id="conseils-titre">Comprendre votre installation</h2>
+        </div>
+        <a class="link-arrow" href="/conseils/">Tous les conseils <Icon name="arrow" size={18} /></a>
+      </div>
+      <ul class="conseils-grid">
+        {
+          conseils.map((c, i) => (
+            <li class="reveal" style={`--d:${i * 0.08}s`}>
+              <a class="conseil-card" href={`/conseils/${c.id}/`}>
+                <span class="conseil-meta">
+                  <Icon name="clock" size={15} /> {c.data.tempsLecture} min de lecture
+                </span>
+                <h3>{c.data.titre}</h3>
+                <p>{c.data.description}</p>
+                <span class="link-arrow">
+                  Lire l’article <Icon name="arrow" size={18} />
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  /* Héros */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(2.5rem, 6vw, 5rem) 0 clamp(3.5rem, 7vw, 6rem);
+    background: var(--ink);
+    color: var(--ink-text);
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(700px 500px at 78% 40%, rgba(210, 46, 36, 0.22), transparent 70%),
+      radial-gradient(500px 300px at 0% 100%, rgba(210, 46, 36, 0.12), transparent 70%),
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 48px 48px;
+    mask-image: radial-gradient(ellipse at 60% 40%, #000 30%, transparent 80%);
+  }
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.08fr 0.92fr;
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: center;
+  }
+  .hero h1 {
+    margin: 1.5rem 0 1.25rem;
+    color: #fff;
+    font-size: clamp(2.6rem, 6.2vw, 5.1rem);
+  }
+  .hl {
+    position: relative;
+    color: var(--red-bright);
+    white-space: nowrap;
+  }
+  .hl::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.02em;
+    height: 0.09em;
+    border-radius: 99px;
+    background: currentColor;
+    transform-origin: left;
+    animation: underline 1s 0.6s var(--ease) both;
+  }
+  @keyframes underline {
+    from {
+      transform: scaleX(0);
+    }
+  }
+  .amp {
+    font-weight: 400;
+    font-stretch: 100%;
+    color: var(--ink-muted);
+  }
+  .hero-lead {
+    max-width: 54ch;
+    margin-bottom: 2rem;
+    color: var(--ink-muted);
+    font-size: clamp(1.08rem, 1.5vw, 1.25rem);
+  }
+  .hero-lead strong {
+    color: #fff;
+  }
+  .hero-trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.5rem;
+    margin: 2.25rem 0 0;
+    padding: 1.5rem 0 0;
+    border-top: 1px solid var(--ink-line);
+    list-style: none;
+    color: var(--ink-text);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  .hero-trust li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .hero-trust :global(svg) {
+    color: var(--red-bright);
+  }
+  .hero-text > * {
+    animation: rise 0.9s var(--ease) both;
+  }
+  .hero-text > :nth-child(2) {
+    animation-delay: 0.08s;
+  }
+  .hero-text > :nth-child(3) {
+    animation-delay: 0.16s;
+  }
+  .hero-text > :nth-child(4) {
+    animation-delay: 0.24s;
+  }
+  .hero-text > :nth-child(5) {
+    animation-delay: 0.32s;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+  .hero-visual {
+    animation: rise 1.1s 0.2s var(--ease) both;
+  }
+
+  /* Métiers */
+  .metiers {
+    border-bottom: 1px solid var(--line);
+  }
+  .metiers-head {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: end;
+    margin-bottom: 2.5rem;
+  }
+  .metiers-head h2 {
+    margin: 0;
+  }
+  .metiers-head p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+  .metiers-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .metiers-grid li + li {
+    border-left: 1px solid var(--line);
+  }
+  .metier {
+    position: relative;
+    display: block;
+    height: 100%;
+    padding: 1.75rem 1.5rem 2.75rem;
+    text-decoration: none;
+    transition: background-color 0.3s var(--ease);
+  }
+  .metier:hover {
+    background: var(--paper);
+  }
+  .metier-lettre {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--red);
+    font-size: 4.2rem;
+    font-weight: 800;
+    font-stretch: 125%;
+    line-height: 1;
+    transition: color 0.3s var(--ease);
+  }
+  .metier:hover .metier-lettre {
+    color: var(--red);
+  }
+  .metier h3 {
+    margin-bottom: 0.4rem;
+  }
+  .metier p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .metier :global(.metier-arrow) {
+    position: absolute;
+    right: 1.5rem;
+    bottom: 1.25rem;
+    color: var(--red);
+    transition: transform 0.3s var(--ease);
+  }
+  .metier:hover :global(.metier-arrow) {
+    transform: translateX(4px);
+  }
+
+  /* Services */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .service-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 2rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: #fff;
+    text-decoration: none;
+    overflow: hidden;
+    transition:
+      transform 0.35s var(--ease),
+      box-shadow 0.35s var(--ease),
+      border-color 0.35s var(--ease);
+  }
+  .service-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s var(--ease);
+  }
+  .service-card:hover {
+    transform: translateY(-6px);
+    border-color: transparent;
+    box-shadow: var(--shadow-lg);
+  }
+  .service-card:hover::before {
+    transform: scaleX(1);
+  }
+  .service-card .icon-tile {
+    margin-bottom: 1.5rem;
+    transition:
+      background-color 0.3s,
+      color 0.3s;
+  }
+  .service-card:hover .icon-tile {
+    background: var(--red);
+    color: #fff;
+  }
+  .service-cat {
+    margin-bottom: 0.4rem;
+    color: var(--muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .service-card p {
+    flex: 1;
+    color: var(--muted);
+    font-size: 0.975rem;
+  }
+
+  /* Urgence + process */
+  .urgence {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+  .urgence-card {
+    position: relative;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+    border-radius: 28px;
+    background:
+      radial-gradient(500px 260px at 100% 0%, rgba(210, 46, 36, 0.35), transparent 70%),
+      var(--ink);
+    color: var(--ink-text);
+    overflow: hidden;
+  }
+  .urgence-head {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    margin-bottom: 1.75rem;
+  }
+  .urgence-head h2 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+  }
+  .urgence-head .eyebrow {
+    margin-bottom: 0.5rem;
+    color: var(--red-bright);
+  }
+  .urgence-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    background: rgba(255, 82, 69, 0.14);
+    color: var(--red-bright);
+  }
+  .urgence-steps {
+    display: grid;
+    gap: 1rem;
+    margin: 0 0 2rem;
+    padding: 0;
+    list-style: none;
+    counter-reset: u;
+  }
+  .urgence-steps li {
+    position: relative;
+    padding: 1rem 1.1rem 1rem 3.4rem;
+    border: 1px solid var(--ink-line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.03);
+    counter-increment: u;
+  }
+  .urgence-steps li::before {
+    content: counter(u);
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 800;
+  }
+  .urgence-steps strong {
+    display: block;
+    color: #fff;
+  }
+  .urgence-steps span {
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+  }
+  .urgence-steps a {
+    color: #fff;
+    font-weight: 700;
+  }
+  .urgence-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .urgence-cta p {
+    margin: 0;
+    color: #fff;
+    font-weight: 600;
+  }
+  .process-list {
+    position: relative;
+    display: grid;
+    gap: 0.5rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .process-list::before {
+    content: '';
+    position: absolute;
+    left: 27px;
+    top: 30px;
+    bottom: 30px;
+    width: 2px;
+    background: linear-gradient(var(--red), rgba(210, 46, 36, 0.1));
+  }
+  .process-list li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 1.25rem;
+    padding: 0.85rem 0;
+  }
+  .process-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--red);
+    box-shadow: var(--shadow-sm);
+  }
+  .process-num {
+    position: absolute;
+    left: 40px;
+    top: 4px;
+    z-index: 1;
+    padding: 0 0.35rem;
+    border-radius: 99px;
+    background: var(--ink);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 800;
+  }
+  .process-list h3 {
+    margin: 0.3rem 0 0.25rem;
+  }
+  .process-list p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  /* Zone */
+  .zone-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
+  }
+  .zone-text {
+    color: var(--ink-muted);
+    font-size: 1.1rem;
+  }
+  .zone-chips {
+    margin: 2rem 0;
+  }
+  .chip--dark {
+    border-color: var(--ink-line);
+    background: rgba(255, 255, 255, 0.04);
+    color: #fff;
+  }
+  .chip--dark :global(svg) {
+    color: var(--red-bright);
+  }
+  a.chip--dark:hover {
+    border-color: var(--red-bright);
+    color: #fff;
+    background: rgba(255, 82, 69, 0.12);
+  }
+  .link-arrow--light {
+    color: #fff;
+  }
+
+  /* Engagements */
+  .engagements {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .engagements li {
+    display: flex;
+    gap: 1.1rem;
+  }
+  .engagements .icon-tile {
+    flex: none;
+  }
+  .engagements h3 {
+    margin: 0.2rem 0 0.35rem;
+  }
+  .engagements p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  /* Conseils */
+  .conseils-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+  }
+  .conseils-head h2 {
+    margin: 0;
+  }
+  .conseils-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .conseil-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s,
+      transform 0.3s var(--ease);
+  }
+  .conseil-card:hover {
+    border-color: transparent;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+  .conseil-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .conseil-card p {
+    flex: 1;
+    color: var(--muted);
+    font-size: 0.975rem;
+  }
+
+  @media (max-width: 1024px) {
+    .services-grid,
+    .conseils-grid,
+    .engagements {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .metiers-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .metiers-grid li:nth-child(3) {
+      border-left: 0;
+    }
+    .metiers-grid li:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
+    }
+  }
+  @media (max-width: 900px) {
+    .hero-grid,
+    .urgence,
+    .zone-grid,
+    .metiers-head {
+      grid-template-columns: 1fr;
+    }
+    .hero-visual {
+      max-width: 460px;
+      margin-inline: auto;
+      width: 100%;
+    }
+  }
+  @media (max-width: 640px) {
+    .services-grid,
+    .conseils-grid,
+    .engagements,
+    .metiers-grid {
+      grid-template-columns: 1fr;
+    }
+    .metiers-grid li + li {
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+    .hero-ctas .btn {
+      width: 100%;
+    }
+    .hl {
+      white-space: normal;
+    }
+  }
+</style>

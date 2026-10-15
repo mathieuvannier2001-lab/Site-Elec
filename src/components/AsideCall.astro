@@ -1,0 +1,78 @@
+---
+/** Encadré latéral « appeler / devis » des pages intérieures. */
+import Icon from './Icon.astro';
+import { ENTREPRISE, telHref } from '../data/entreprise';
+
+interface Props {
+  titre?: string;
+}
+const { titre = 'Besoin d’un électricien ?' } = Astro.props;
+---
+
+<div class="aside-call">
+  <p class="status"><span class="status-dot"></span>{ENTREPRISE.disponibilite}</p>
+  <p class="aside-title">{titre}</p>
+  <a class="aside-phone" href={telHref}>
+    <Icon name="phone" size={22} />
+    {ENTREPRISE.telephone}
+  </a>
+  <ul class="aside-list">
+    <li><Icon name="check" size={16} /> Devis gratuit et détaillé</li>
+    <li><Icon name="check" size={16} /> Prix annoncé avant intervention</li>
+    <li><Icon name="check" size={16} /> Castries, Montpellier et alentours</li>
+  </ul>
+  <a class="btn btn--white aside-btn" href="/contact/#devis">
+    Demander un devis <Icon name="arrow" size={18} class="icon-arrow" />
+  </a>
+</div>
+
+<style>
+  .aside-call {
+    padding: 1.75rem;
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(320px 200px at 100% 0%, rgba(210, 46, 36, 0.4), transparent 70%),
+      var(--ink);
+    color: var(--ink-text);
+  }
+  .aside-title {
+    margin: 1.25rem 0 0.25rem;
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 760;
+    font-stretch: 110%;
+  }
+  .aside-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #fff;
+    font-size: 1.65rem;
+    font-weight: 800;
+    font-stretch: 115%;
+    text-decoration: none;
+  }
+  .aside-phone :global(svg) {
+    color: var(--red-bright);
+  }
+  .aside-list {
+    display: grid;
+    gap: 0.5rem;
+    margin: 1.25rem 0 1.5rem;
+    padding: 1.25rem 0 0;
+    border-top: 1px solid var(--ink-line);
+    list-style: none;
+    font-size: 0.95rem;
+  }
+  .aside-list li {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .aside-list :global(svg) {
+    color: var(--green);
+  }
+  .aside-btn {
+    width: 100%;
+  }
+</style>

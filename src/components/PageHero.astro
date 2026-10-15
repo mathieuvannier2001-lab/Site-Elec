@@ -1,0 +1,174 @@
+---
+/** Bandeau de tête des pages intérieures (services, villes, conseils…). */
+import Icon from './Icon.astro';
+import { ENTREPRISE, telHref } from '../data/entreprise';
+
+interface Props {
+  eyebrow?: string;
+  titre: string;
+  lead?: string;
+  fil: { nom: string; path: string }[];
+  icone?: string;
+  ctas?: boolean;
+}
+const { eyebrow, titre, lead, fil, icone, ctas = true } = Astro.props;
+---
+
+<section class="page-hero">
+  <div class="page-hero-bg" aria-hidden="true"></div>
+  <div class="container page-hero-inner">
+    <nav class="crumbs" aria-label="Fil d’Ariane">
+      <ol>
+        {
+          fil.map((it, i) => (
+            <li>
+              {i < fil.length - 1 ? <a href={it.path}>{it.nom}</a> : <span aria-current="page">{it.nom}</span>}
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <div class="page-hero-grid">
+      <div>
+        {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+        <h1>{titre}</h1>
+        {lead && <p class="page-hero-lead">{lead}</p>}
+        {
+          ctas && (
+            <div class="btn-row">
+              <a class="btn btn--red btn--lg" href={telHref}>
+                <Icon name="phone" size={20} /> {ENTREPRISE.telephone}
+              </a>
+              <a class="btn btn--ghost-light btn--lg" href="/contact/#devis">
+                Devis gratuit <Icon name="arrow" size={18} class="icon-arrow" />
+              </a>
+            </div>
+          )
+        }
+        <slot />
+      </div>
+      {
+        icone && (
+          <div class="page-hero-icon" aria-hidden="true">
+            <span class="ring ring-1" />
+            <span class="ring ring-2" />
+            <span class="ring ring-3" />
+            <Icon name={icone} size={64} strokeWidth={1.4} />
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 1.5rem 0 clamp(3.5rem, 7vw, 5.5rem);
+    background: var(--ink);
+    color: var(--ink-text);
+  }
+  .page-hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(600px 380px at 85% 10%, rgba(210, 46, 36, 0.28), transparent 70%),
+      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 44px 44px,
+      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 44px 44px;
+    mask-image: linear-gradient(180deg, #000 40%, transparent);
+  }
+  .page-hero-inner {
+    position: relative;
+  }
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 0 clamp(2rem, 5vw, 3.5rem);
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+    color: var(--ink-muted);
+  }
+  .crumbs li:not(:last-child)::after {
+    content: '/';
+    margin-left: 0.4rem;
+    opacity: 0.5;
+  }
+  .crumbs a {
+    text-decoration: none;
+  }
+  .crumbs a:hover {
+    color: #fff;
+  }
+  .crumbs [aria-current] {
+    color: #fff;
+  }
+  .page-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 3rem;
+  }
+  .page-hero h1 {
+    max-width: 18ch;
+    color: #fff;
+    font-size: clamp(2.1rem, 4.6vw, 3.6rem);
+  }
+  .page-hero-lead {
+    max-width: 62ch;
+    margin-bottom: 2rem;
+    color: var(--ink-muted);
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  }
+  .page-hero-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 240px;
+    height: 240px;
+    color: var(--red-bright);
+  }
+  .ring {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(255, 82, 69, 0.25);
+    border-radius: 50%;
+    animation: breathe 4s var(--ease) infinite;
+  }
+  .ring-2 {
+    inset: 30px;
+    border-color: rgba(255, 82, 69, 0.4);
+    animation-delay: 0.4s;
+  }
+  .ring-3 {
+    inset: 62px;
+    border: 0;
+    background: radial-gradient(circle, rgba(210, 46, 36, 0.35), rgba(210, 46, 36, 0.05));
+    animation-delay: 0.8s;
+  }
+  .page-hero-icon :global(svg) {
+    position: relative;
+  }
+  @keyframes breathe {
+    50% {
+      transform: scale(1.05);
+      opacity: 0.7;
+    }
+  }
+  @media (max-width: 860px) {
+    .page-hero-grid {
+      grid-template-columns: 1fr;
+    }
+    .page-hero-icon {
+      display: none;
+    }
+  }
+  @media (max-width: 480px) {
+    .page-hero .btn {
+      width: 100%;
+    }
+  }
+</style>

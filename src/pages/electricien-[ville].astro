@@ -1,0 +1,254 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import AsideCall from '../components/AsideCall.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { communeParSlug, communesVoisines, trajetDepuisCastries } from '../data/communes';
+import * as ld from '../lib/schema';
+
+export async function getStaticPaths() {
+  const villes = await getCollection('villes');
+  return villes.map((ville) => ({ params: { ville: ville.id }, props: { ville } }));
+}
+
+const { ville } = Astro.props;
+const { Content } = await render(ville);
+const d = ville.data;
+const site = Astro.site!;
+const path = `/electricien-${ville.id}/`;
+
+const commune = communeParSlug(ville.id);
+if (!commune) throw new Error(`Commune « ${ville.id} » absente de src/data/communes.ts`);
+const trajet = trajetDepuisCastries(commune);
+const estCastries = ville.id === 'castries';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.ordre - b.data.ordre);
+const pagesVilles = new Set((await getCollection('villes')).map((v) => v.id));
+const voisines = communesVoisines(ville.id, 8);
+
+const faq = [
+  ...d.faq,
+  estCastries
+    ? {
+        q: 'Quels sont vos horaires à Castries ?',
+        r: 'Nous sommes joignables du lundi au vendredi de 7 h 30 à 19 h, et les dépannages du samedi et du dimanche sont assurés sur demande. Appelez le 06 65 95 33 04.',
+      }
+    : {
+        q: `Combien de temps pour venir à ${d.nom} ?`,
+        r: `${d.nom} se trouve à environ ${trajet.km} km de notre base de Castries, soit environ ${trajet.minutes} minutes de trajet hors heures de pointe. Pour un dépannage, nous fixons ensemble le créneau le plus rapide lors de votre appel.`,
+      },
+];
+
+const fil = [
+  { nom: 'Accueil', path: '/' },
+  { nom: 'Zones d’intervention', path: '/zones-intervention/' },
+  { nom: `Électricien à ${d.nom}`, path },
+];
+
+const schema = [
+  ld.entreprise(site),
+  ld.pageWeb(site, { path, titre: d.titreSeo, description: d.description, avecFilAriane: true }),
+  ld.filAriane(site, path, fil),
+  ld.service(site, {
+    path,
+    nom: `Électricien à ${d.nom}`,
+    description: d.description,
+    categorie: 'Électricité générale',
+    zone: d.nom,
+  }),
+  ld.faq(site, path, faq),
+];
+---
+
+<Base titre={d.titreSeo} description={d.description} schema={schema}>
+  <PageHero eyebrow={`${d.nom} · ${commune.cp}`} titre={`Électricien à ${d.nom}`} lead={d.accroche} fil={fil} icone="pin">
+    <ul class="facts">
+      <li>
+        <Icon name="route" size={18} />
+        {estCastries ? 'Notre commune' : `≈ ${trajet.km} km de Castries`}
+      </li>
+      <li><Icon name="clock" size={18} /> 7j/7 sur demande</li>
+      <li><Icon name="file" size={18} /> Devis gratuit</li>
+    </ul>
+  </PageHero>
+
+  <section class="section">
+    <div class="container layout">
+      <article class="prose">
+        <Content />
+
+        <h2>Nos services à {d.nom}</h2>
+        <ul class="svc-list">
+          {
+            services.map((s) => (
+              <li>
+                <a href={`/services/${s.id}/`}>
+                  <span class="svc-icon">
+                    <Icon name={s.data.icone} size={20} />
+                  </span>
+                  <span>
+                    <strong>
+                      {s.data.nomCourt} à {d.nom}
+                    </strong>
+                    <small>{s.data.categorie}</small>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        {
+          d.secteurs.length > 0 && (
+            <>
+              <h2>Secteurs desservis à {d.nom}</h2>
+              <ul class="chips not-prose">
+                {d.secteurs.map((s) => (
+                  <li class="chip">{s}</li>
+                ))}
+              </ul>
+            </>
+          )
+        }
+      </article>
+
+      <aside class="aside">
+        <div class="aside-sticky">
+          <AsideCall titre={`Un électricien à ${d.nom} ?`} />
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <Faq items={faq} titre={`Électricien à ${d.nom} : vos questions`} />
+
+  <section class="section section--tight" aria-labelledby="voisines-titre">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Autour de {d.nom}</p>
+        <h2 id="voisines-titre">Nous intervenons aussi dans les communes voisines</h2>
+      </div>
+      <ul class="chips">
+        {
+          voisines.map((c) =>
+            pagesVilles.has(c.slug) ? (
+              <li>
+                <a class="chip chip--strong" href={`/electricien-${c.slug}/`}>
+                  <Icon name="pin" size={15} /> Électricien {c.nom}
+                </a>
+              </li>
+            ) : (
+              <li class="chip">
+                {c.nom} ({c.cp})
+              </li>
+            ),
+          )
+        }
+        <li>
+          <a class="chip" href="/zones-intervention/">Toutes les communes <Icon name="arrow" size={15} /></a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand titre={`Besoin d’un électricien à ${d.nom} ?`} />
+</Base>
+
+<style>
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .facts li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .facts :global(svg) {
+    color: var(--red-bright);
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+  .aside-sticky {
+    position: sticky;
+    top: calc(var(--header-h) + 1.5rem);
+  }
+  .svc-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin: 1.5rem 0 0;
+    padding: 0 !important;
+    list-style: none;
+  }
+  .svc-list li {
+    margin: 0;
+  }
+  .svc-list a {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    height: 100%;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-weight: 400;
+    text-decoration: none;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+  .svc-list a:hover {
+    border-color: rgba(210, 46, 36, 0.4);
+    box-shadow: var(--shadow);
+  }
+  .svc-list strong {
+    display: block;
+    font-size: 0.975rem;
+    line-height: 1.3;
+  }
+  .svc-list small {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  .svc-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: var(--red-soft);
+    color: var(--red);
+  }
+  .prose .chips {
+    padding: 0;
+  }
+  @media (max-width: 960px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+    .aside-sticky {
+      position: static;
+    }
+  }
+  @media (max-width: 560px) {
+    .svc-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

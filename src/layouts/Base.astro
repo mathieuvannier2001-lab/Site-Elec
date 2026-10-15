@@ -1,0 +1,191 @@
+---
+/**
+ * Gabarit commun à toutes les pages : balises SEO, en-tête, pied de page,
+ * barre d'appel mobile et données structurées.
+ */
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import { ENTREPRISE, telHref } from '../data/entreprise';
+import { graphe } from '../lib/schema';
+
+interface Props {
+  titre: string;
+  description: string;
+  image?: string;
+  imageAlt?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  schema?: Record<string, unknown>[];
+}
+
+const {
+  titre,
+  description,
+  image = '/og/amcf-electricien-castries.png',
+  imageAlt = 'AMCF, électricien à Castries et Montpellier – dépannage 7j/7',
+  type = 'website',
+  noindex = false,
+  schema = [],
+} = Astro.props;
+
+const site = Astro.site!;
+const canonique = new URL(Astro.url.pathname, site).href;
+const imageAbs = new URL(image, site).href;
+const jsonLd = schema.length ? JSON.stringify(graphe(...schema)) : null;
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titre}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonique} />
+    <meta
+      name="robots"
+      content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+    />
+
+    <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin />
+    <script is:inline>document.documentElement.classList.add('js');</script>
+
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={ENTREPRISE.nom} />
+    <meta property="og:title" content={titre} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonique} />
+    <meta property="og:image" content={imageAbs} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={titre} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageAbs} />
+
+    <meta name="geo.region" content="FR-34" />
+    <meta name="geo.placename" content="Castries" />
+    <meta name="geo.position" content={`${ENTREPRISE.geo.lat};${ENTREPRISE.geo.lng}`} />
+    <meta name="ICBM" content={`${ENTREPRISE.geo.lat}, ${ENTREPRISE.geo.lng}`} />
+
+    <meta name="theme-color" content="#0c0d10" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <slot name="head" />
+    {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
+  </head>
+  <body>
+    <a class="skip-link" href="#contenu">Aller au contenu</a>
+    <Header />
+    <main id="contenu">
+      <slot />
+    </main>
+    <Footer />
+
+    <nav class="call-bar" aria-label="Contact rapide">
+      <a class="call-bar-btn call-bar-btn--call" href={telHref}>
+        <Icon name="phone" size={20} />
+        <span>Appeler</span>
+      </a>
+      <a class="call-bar-btn" href="/contact/#devis">
+        <Icon name="file" size={20} />
+        <span>Devis gratuit</span>
+      </a>
+    </nav>
+
+    <script is:inline>
+      (() => {
+        // En-tête : ombre au défilement
+        const header = document.querySelector('[data-header]');
+        const onScroll = () => header && header.classList.toggle('is-scrolled', window.scrollY > 8);
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+
+        // Menu mobile
+        const burger = document.querySelector('[data-burger]');
+        const menu = document.querySelector('[data-mobile-menu]');
+        if (burger && menu) {
+          const close = () => {
+            burger.setAttribute('aria-expanded', 'false');
+            menu.hidden = true;
+            document.body.style.overflow = '';
+          };
+          burger.addEventListener('click', () => {
+            const open = burger.getAttribute('aria-expanded') !== 'true';
+            burger.setAttribute('aria-expanded', String(open));
+            menu.hidden = !open;
+            document.body.style.overflow = open ? 'hidden' : '';
+          });
+          document.addEventListener('keydown', (e) => e.key === 'Escape' && close());
+          menu.addEventListener('click', (e) => e.target.closest('a') && close());
+        }
+
+        // Apparition des blocs au défilement
+        const items = document.querySelectorAll('.reveal');
+        if (!('IntersectionObserver' in window)) {
+          items.forEach((el) => el.classList.add('is-in'));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) =>
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-in');
+                io.unobserve(entry.target);
+              }
+            }),
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+        items.forEach((el) => io.observe(el));
+      })();
+    </script>
+
+    <style>
+      .call-bar {
+        position: fixed;
+        inset: auto 0 0;
+        z-index: 60;
+        display: none;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 0.5rem;
+        padding: 0.6rem 0.75rem calc(0.6rem + env(safe-area-inset-bottom));
+        background: rgba(12, 13, 16, 0.92);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid var(--ink-line);
+      }
+      .call-bar-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-height: 50px;
+        border-radius: 14px;
+        background: #fff;
+        color: var(--ink);
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .call-bar-btn--call {
+        background: var(--red);
+        color: #fff;
+      }
+      @media (max-width: 760px) {
+        .call-bar {
+          display: grid;
+        }
+        body {
+          padding-bottom: calc(74px + env(safe-area-inset-bottom));
+        }
+      }
+    </style>
+  </body>
+</html>

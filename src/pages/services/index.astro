@@ -1,0 +1,179 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import * as ld from '../../lib/schema';
+
+const site = Astro.site!;
+const path = '/services/';
+const services = (await getCollection('services')).sort((a, b) => a.data.ordre - b.data.ordre);
+const categories = ['Courant fort', 'Courant faible', 'Automatisme', 'Maintenance'] as const;
+
+const titre = 'Services d’électricité à Castries et Montpellier | AMCF';
+const description =
+  'Dépannage, tableau électrique, mise aux normes, rénovation, automatismes, courant faible, borne de recharge : tous nos services à Castries et Montpellier.';
+const fil = [
+  { nom: 'Accueil', path: '/' },
+  { nom: 'Services', path },
+];
+
+const schema = [
+  ld.entreprise(site, services.map((s) => ({ nom: s.data.nomCourt, url: ld.abs(site, `/services/${s.id}/`) }))),
+  ld.pageWeb(site, { path, titre, description, type: 'CollectionPage', avecFilAriane: true }),
+  ld.filAriane(site, path, fil),
+];
+---
+
+<Base titre={titre} description={description} schema={schema}>
+  <PageHero
+    eyebrow="Nos services"
+    titre="Tous nos services d’électricité"
+    lead="Du dépannage urgent à la rénovation complète, en passant par les automatismes et le courant faible : un seul électricien pour l’ensemble de votre installation, à Castries, Montpellier et alentours."
+    fil={fil}
+    icone="bolt"
+  />
+
+  {
+    categories.map((cat) => {
+      const liste = services.filter((s) => s.data.categorie === cat);
+      return (
+        liste.length > 0 && (
+          <section class="section section--tight cat" aria-label={cat}>
+            <div class="container">
+              <h2 class="cat-title">
+                <span>{cat}</span>
+              </h2>
+              <ul class="cat-grid">
+                {liste.map((s) => (
+                  <li class="reveal">
+                    <a class="row" href={`/services/${s.id}/`}>
+                      <span class="icon-tile">
+                        <Icon name={s.data.icone} size={26} />
+                      </span>
+                      <div class="row-body">
+                        <h3>{s.data.nomCourt}</h3>
+                        <p>{s.data.resume}</p>
+                        <ul class="row-tags">
+                          {s.data.prestations.slice(0, 3).map((p) => (
+                            <li>{p}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <span class="row-arrow">
+                        <Icon name="arrow" size={22} />
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )
+      );
+    })
+  }
+
+  <CtaBand />
+</Base>
+
+<style>
+  .cat + .cat {
+    padding-top: 0;
+  }
+  .cat-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-stretch: 120%;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--red);
+  }
+  .cat-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  .cat-grid {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s,
+      transform 0.3s var(--ease);
+  }
+  .row:hover {
+    border-color: transparent;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+  }
+  .row h3 {
+    margin-bottom: 0.3rem;
+    font-size: 1.4rem;
+  }
+  .row p {
+    margin: 0 0 0.75rem;
+    color: var(--muted);
+  }
+  .row-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .row-tags li {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--paper);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .row-arrow {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    color: var(--red);
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      transform 0.3s var(--ease);
+  }
+  .row:hover .row-arrow {
+    background: var(--red);
+    color: #fff;
+    transform: rotate(-45deg);
+  }
+  @media (max-width: 640px) {
+    .row {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    .row-arrow {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,391 @@
+---
+import { getCollection } from 'astro:content';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { ENTREPRISE, telHref } from '../data/entreprise';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.ordre - b.data.ordre);
+const path = Astro.url.pathname;
+const actif = (prefix: string) => (prefix === '/' ? path === '/' : path.startsWith(prefix));
+---
+
+<header class="site-header" data-header>
+  <div class="container header-inner">
+    <a class="brand" href="/">
+      <Logo class="brand-logo" />
+      <span class="brand-text">
+        <span class="brand-name">{ENTREPRISE.nom}</span>
+        <span class="brand-sub">Électricien · Castries</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Navigation principale">
+      <ul class="nav-list">
+        <li class="has-mega">
+          <a class="nav-link" href="/services/" aria-current={actif('/services/') ? 'page' : undefined}>
+            Services <Icon name="chevron" size={16} />
+          </a>
+          <div class="mega">
+            <div class="mega-inner">
+              <ul class="mega-grid">
+                {
+                  services.map((s) => (
+                    <li>
+                      <a class="mega-link" href={`/services/${s.id}/`}>
+                        <span class="mega-icon">
+                          <Icon name={s.data.icone} size={20} />
+                        </span>
+                        <span>
+                          <strong>{s.data.nomCourt}</strong>
+                          <small>{s.data.categorie}</small>
+                        </span>
+                      </a>
+                    </li>
+                  ))
+                }
+              </ul>
+              <a class="mega-all" href="/services/">
+                Toutes nos prestations <Icon name="arrow" size={18} class="icon-arrow" />
+              </a>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a class="nav-link" href="/zones-intervention/" aria-current={actif('/zones-intervention/') || actif('/electricien-') ? 'page' : undefined}>
+            Zones d’intervention
+          </a>
+        </li>
+        <li>
+          <a class="nav-link" href="/conseils/" aria-current={actif('/conseils/') ? 'page' : undefined}>Conseils</a>
+        </li>
+        <li>
+          <a class="nav-link" href="/contact/" aria-current={actif('/contact/') ? 'page' : undefined}>Contact</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a class="btn btn--red header-phone" href={telHref}>
+        <Icon name="phone" size={18} />
+        <span>{ENTREPRISE.telephone}</span>
+      </a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="menu-mobile" data-burger>
+        <span class="sr-only">Menu</span>
+        <Icon name="menu" class="burger-open" />
+        <Icon name="close" class="burger-close" />
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-menu" id="menu-mobile" data-mobile-menu hidden>
+    <div class="container">
+      <p class="mobile-title">Nos services</p>
+      <ul class="mobile-services">
+        {
+          services.map((s) => (
+            <li>
+              <a href={`/services/${s.id}/`}>
+                <Icon name={s.data.icone} size={20} />
+                {s.data.nomCourt}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <ul class="mobile-links">
+        <li><a href="/zones-intervention/">Zones d’intervention</a></li>
+        <li><a href="/conseils/">Conseils</a></li>
+        <li><a href="/contact/">Contact & devis</a></li>
+      </ul>
+      <a class="btn btn--red btn--lg mobile-call" href={telHref}>
+        <Icon name="phone" size={20} /> Appeler le {ENTREPRISE.telephone}
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(12, 13, 16, 0.96);
+    backdrop-filter: saturate(160%) blur(14px);
+    -webkit-backdrop-filter: saturate(160%) blur(14px);
+    border-bottom: 1px solid var(--ink-line);
+    color: #fff;
+    transition: background-color 0.3s var(--ease);
+  }
+  .site-header.is-scrolled {
+    box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.45);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: var(--header-h);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #fff;
+    text-decoration: none;
+    margin-right: auto;
+  }
+  .brand :global(.brand-logo) {
+    width: 46px;
+    height: auto;
+    color: var(--red);
+    flex: none;
+  }
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+  .brand-name {
+    font-weight: 800;
+    font-stretch: 125%;
+    font-size: 1.2rem;
+    letter-spacing: 0.04em;
+  }
+  .brand-sub {
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-stretch: 115%;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--ink-muted);
+  }
+
+  .nav-list {
+    display: flex;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: 999px;
+    color: #d9d8d4;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition:
+      color 0.2s,
+      background-color 0.2s;
+  }
+  .nav-link:hover,
+  .nav-link[aria-current='page'] {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.07);
+  }
+  .nav-link :global(svg) {
+    transition: transform 0.25s var(--ease);
+  }
+
+  .has-mega {
+    position: relative;
+  }
+  .mega {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    width: min(720px, 90vw);
+    padding-top: 14px;
+    transform: translate(-50%, 8px);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.25s var(--ease),
+      transform 0.25s var(--ease),
+      visibility 0.25s;
+  }
+  .has-mega:hover .mega,
+  .has-mega:focus-within .mega {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+  .has-mega:hover .nav-link :global(svg),
+  .has-mega:focus-within .nav-link :global(svg) {
+    transform: rotate(180deg);
+  }
+  .mega-inner {
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: #fff;
+    color: var(--text);
+    box-shadow: var(--shadow-lg);
+  }
+  .mega-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .mega-link {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    padding: 0.75rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  .mega-link:hover {
+    background: var(--paper);
+  }
+  .mega-link strong {
+    display: block;
+    font-size: 0.95rem;
+    line-height: 1.25;
+  }
+  .mega-link small {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  .mega-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--red-soft);
+    color: var(--red);
+  }
+  .mega-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.8rem;
+    border-radius: 12px;
+    background: var(--ink);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .header-phone {
+    min-height: 46px;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.95rem;
+  }
+  .burger {
+    display: none;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--ink-line);
+    border-radius: 12px;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+  }
+  .burger :global(.burger-close) {
+    display: none;
+  }
+  .burger[aria-expanded='true'] :global(.burger-open) {
+    display: none;
+  }
+  .burger[aria-expanded='true'] :global(.burger-close) {
+    display: block;
+  }
+
+  .mobile-menu {
+    max-height: calc(100dvh - var(--header-h));
+    overflow-y: auto;
+    padding: 1rem 0 2rem;
+    border-top: 1px solid var(--ink-line);
+    background: var(--ink);
+  }
+  .mobile-title {
+    margin: 0.5rem 0 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .mobile-services,
+  .mobile-links {
+    display: grid;
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
+  }
+  .mobile-services a {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--ink-line);
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .mobile-services :global(svg) {
+    color: var(--red-bright);
+  }
+  .mobile-links a {
+    display: block;
+    padding: 0.8rem 0;
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-stretch: 110%;
+    text-decoration: none;
+  }
+  .mobile-call {
+    width: 100%;
+  }
+
+  @media (max-width: 1080px) {
+    .nav-link {
+      padding-inline: 0.65rem;
+    }
+  }
+  @media (max-width: 960px) {
+    .nav {
+      display: none;
+    }
+    .burger {
+      display: grid;
+    }
+  }
+  @media (max-width: 560px) {
+    .header-phone span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+    .header-phone {
+      width: 46px;
+      padding: 0;
+    }
+    .brand :global(.brand-logo) {
+      width: 40px;
+    }
+  }
+</style>

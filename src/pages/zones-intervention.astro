@@ -1,0 +1,142 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import ZoneMap from '../components/ZoneMap.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import { COMMUNES, trajetDepuisCastries } from '../data/communes';
+import * as ld from '../lib/schema';
+
+const site = Astro.site!;
+const path = '/zones-intervention/';
+const villes = await getCollection('villes');
+const avecPage = new Set(villes.map((v) => v.id));
+const communes = COMMUNES.map((c) => ({ ...c, ...trajetDepuisCastries(c), page: avecPage.has(c.slug) })).sort(
+  (a, b) => a.km - b.km,
+);
+
+const titre = 'Zones d’intervention : Castries, Montpellier et alentours | AMCF';
+const description =
+  'AMCF, électricien basé à Castries, intervient à Montpellier et dans plus de 30 communes : Le Crès, Vendargues, Jacou, Teyran, Baillargues, Mauguio, Lattes…';
+const fil = [
+  { nom: 'Accueil', path: '/' },
+  { nom: 'Zones d’intervention', path },
+];
+const schema = [
+  ld.entreprise(site),
+  ld.pageWeb(site, { path, titre, description, type: 'CollectionPage', avecFilAriane: true }),
+  ld.filAriane(site, path, fil),
+];
+---
+
+<Base titre={titre} description={description} schema={schema}>
+  <PageHero
+    eyebrow="Zone d’intervention"
+    titre="Électricien à Castries, Montpellier et alentours"
+    lead={`Basés à Castries, nous intervenons à Montpellier et dans ${communes.length} communes de l’Hérault, dans un rayon d’environ 30 km, pour les particuliers comme pour les professionnels.`}
+    fil={fil}
+    icone="route"
+  />
+
+  <section class="section section--dark">
+    <div class="container zone-grid">
+      <ZoneMap />
+      <div>
+        <h2>Les communes desservies</h2>
+        <p class="zone-intro">Classées de la plus proche à la plus éloignée de notre base de Castries.</p>
+        <ul class="communes">
+          {
+            communes.map((c) => (
+              <li>
+                {c.page ? (
+                  <a href={`/electricien-${c.slug}/`}>
+                    <span class="c-name">
+                      <Icon name="pin" size={15} /> {c.nom}
+                    </span>
+                    <span class="c-meta">
+                      {c.cp} · {c.slug === 'castries' ? 'notre base' : `≈ ${c.km} km`}
+                    </span>
+                  </a>
+                ) : (
+                  <span class="c-row">
+                    <span class="c-name">{c.nom}</span>
+                    <span class="c-meta">
+                      {c.cp} · ≈ {c.km} km
+                    </span>
+                  </span>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+        <p class="zone-note">
+          Votre commune n’apparaît pas ? Appelez-nous : nous intervenons régulièrement au-delà de cette liste.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .zone-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+  .zone-intro,
+  .zone-note {
+    color: var(--ink-muted);
+  }
+  .communes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0 1.5rem;
+    margin: 1.5rem 0;
+    padding: 0;
+    list-style: none;
+  }
+  .communes a,
+  .c-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--ink-line);
+    text-decoration: none;
+  }
+  .communes a {
+    color: #fff;
+    font-weight: 700;
+  }
+  .communes a:hover {
+    color: var(--red-bright);
+  }
+  .c-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .c-name :global(svg) {
+    color: var(--red-bright);
+  }
+  .c-meta {
+    flex: none;
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  @media (max-width: 900px) {
+    .zone-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .communes {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

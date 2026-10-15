@@ -1,0 +1,212 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import AsideCall from '../../components/AsideCall.astro';
+import Faq from '../../components/Faq.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import * as ld from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('conseils');
+  return articles.map((article) => ({ params: { slug: article.id }, props: { article } }));
+}
+
+const { article } = Astro.props;
+const { Content, headings } = await render(article);
+const d = article.data;
+const site = Astro.site!;
+const path = `/conseils/${article.id}/`;
+const fmt = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+const sommaire = headings.filter((h) => h.depth === 2);
+
+const servicesLies = (await Promise.all(d.servicesLies.map((id) => getEntry('services', id)))).filter(
+  (s): s is NonNullable<typeof s> => Boolean(s),
+);
+const autres = (await getCollection('conseils')).filter((a) => a.id !== article.id);
+
+const fil = [
+  { nom: 'Accueil', path: '/' },
+  { nom: 'Conseils', path: '/conseils/' },
+  { nom: d.titre, path },
+];
+const schema = [
+  ld.entreprise(site),
+  ld.pageWeb(site, { path, titre: d.titreSeo, description: d.description, avecFilAriane: true }),
+  ld.filAriane(site, path, fil),
+  ld.article(site, {
+    path,
+    titre: d.titre,
+    description: d.description,
+    date: d.date,
+    maj: d.miseAJour,
+    image: '/og/amcf-electricien-castries.png',
+  }),
+  ld.faq(site, path, d.faq),
+];
+---
+
+<Base titre={d.titreSeo} description={d.description} type="article" schema={schema}>
+  <Fragment slot="head">
+    <meta property="article:published_time" content={d.date.toISOString()} />
+    <meta property="article:modified_time" content={(d.miseAJour ?? d.date).toISOString()} />
+  </Fragment>
+
+  <PageHero eyebrow="Conseils d’électricien" titre={d.titre} lead={d.description} fil={fil} ctas={false}>
+    <p class="meta">
+      <span><Icon name="calendar" size={16} /> <time datetime={d.date.toISOString()}>{fmt.format(d.date)}</time></span>
+      <span><Icon name="clock" size={16} /> {d.tempsLecture} min de lecture</span>
+      <span><Icon name="user" size={16} /> Par AMCF, électricien à Castries</span>
+    </p>
+  </PageHero>
+
+  <section class="section">
+    <div class="container layout">
+      <article class="prose">
+        <Content />
+      </article>
+      <aside>
+        <div class="aside-sticky">
+          {
+            sommaire.length > 0 && (
+              <nav class="toc" aria-label="Sommaire">
+                <p class="toc-title">Sommaire</p>
+                <ol>
+                  {sommaire.map((h) => (
+                    <li>
+                      <a href={`#${h.slug}`}>{h.text}</a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            )
+          }
+          <AsideCall />
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <Faq items={d.faq} titre="Questions fréquentes" />
+
+  <section class="section section--tight">
+    <div class="container related">
+      {
+        servicesLies.length > 0 && (
+          <div>
+            <p class="related-title">Nos services liés</p>
+            <ul>
+              {servicesLies.map((s) => (
+                <li>
+                  <a class="link-arrow" href={`/services/${s.id}/`}>
+                    {s.data.nomCourt} <Icon name="arrow" size={18} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+      {
+        autres.length > 0 && (
+          <div>
+            <p class="related-title">Autres conseils</p>
+            <ul>
+              {autres.map((a) => (
+                <li>
+                  <a class="link-arrow" href={`/conseils/${a.id}/`}>
+                    {a.data.titre} <Icon name="arrow" size={18} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .meta :global(svg) {
+    color: var(--red-bright);
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+  .aside-sticky {
+    position: sticky;
+    top: calc(var(--header-h) + 1.5rem);
+    display: grid;
+    gap: 1.25rem;
+  }
+  .toc {
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .toc-title,
+  .related-title {
+    margin: 0 0 0.75rem;
+    font-weight: 760;
+    font-stretch: 108%;
+  }
+  .toc ol {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.95rem;
+  }
+  .toc li::marker {
+    color: var(--red);
+    font-weight: 700;
+  }
+  .toc a {
+    text-decoration: none;
+  }
+  .toc a:hover {
+    color: var(--red);
+  }
+  .related {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  .related ul {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (max-width: 960px) {
+    .layout,
+    .related {
+      grid-template-columns: 1fr;
+    }
+    .aside-sticky {
+      position: static;
+    }
+  }
+</style>

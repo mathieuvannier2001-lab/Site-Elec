@@ -1,0 +1,108 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Icon from '../../components/Icon.astro';
+import * as ld from '../../lib/schema';
+
+const site = Astro.site!;
+const path = '/conseils/';
+const articles = (await getCollection('conseils')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const fmt = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const titre = 'Conseils d’électricien : pannes, normes, sécurité | AMCF';
+const description =
+  'Disjoncteur qui saute, panne de courant, mise aux normes : les conseils pratiques d’AMCF, électricien à Castries, pour comprendre votre installation.';
+const fil = [
+  { nom: 'Accueil', path: '/' },
+  { nom: 'Conseils', path },
+];
+const schema = [
+  ld.entreprise(site),
+  ld.pageWeb(site, { path, titre, description, type: 'CollectionPage', avecFilAriane: true }),
+  ld.filAriane(site, path, fil),
+];
+---
+
+<Base titre={titre} description={description} schema={schema}>
+  <PageHero
+    eyebrow="Conseils d’électricien"
+    titre="Comprendre et sécuriser votre installation"
+    lead="Des réponses claires aux questions que l’on nous pose le plus souvent : pannes, disjoncteurs, normes et sécurité."
+    fil={fil}
+    icone="bulb"
+    ctas={false}
+  />
+
+  <section class="section">
+    <div class="container">
+      <ul class="articles">
+        {
+          articles.map((a) => (
+            <li class="reveal">
+              <a class="article-card" href={`/conseils/${a.id}/`}>
+                <span class="meta">
+                  <time datetime={a.data.date.toISOString()}>{fmt.format(a.data.date)}</time>
+                  <span aria-hidden="true">·</span>
+                  <span>{a.data.tempsLecture} min de lecture</span>
+                </span>
+                <h2>{a.data.titre}</h2>
+                <p>{a.data.description}</p>
+                <span class="link-arrow">
+                  Lire l’article <Icon name="arrow" size={18} />
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .articles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .article-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 2rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s,
+      transform 0.3s var(--ease);
+  }
+  .article-card:hover {
+    border-color: transparent;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+  .meta {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .article-card h2 {
+    font-size: 1.4rem;
+  }
+  .article-card p {
+    flex: 1;
+    color: var(--muted);
+  }
+</style>

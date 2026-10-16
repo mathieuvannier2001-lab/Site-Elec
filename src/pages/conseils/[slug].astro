@@ -7,6 +7,7 @@ import Faq from '../../components/Faq.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import Icon from '../../components/Icon.astro';
 import * as ld from '../../lib/schema';
+import { ENTREPRISE } from '../../data/entreprise';
 
 export async function getStaticPaths() {
   const articles = await getCollection('conseils');
@@ -57,7 +58,7 @@ const schema = [
     <p class="meta">
       <span><Icon name="calendar" size={16} /> <time datetime={d.date.toISOString()}>{fmt.format(d.date)}</time></span>
       <span><Icon name="clock" size={16} /> {d.tempsLecture} min de lecture</span>
-      <span><Icon name="user" size={16} /> Par AMCF, électricien à Castries</span>
+      <span><Icon name="user" size={16} /> Par {ENTREPRISE.legal.dirigeant}, électricien à Castries</span>
     </p>
   </PageHero>
 

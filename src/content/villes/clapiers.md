@@ -1,6 +1,6 @@
 ---
 nom: "Clapiers"
-titreSeo: "Électricien à Clapiers (34830) – Dépannage & installation | AMCF"
+titreSeo: "Électricien à Clapiers (34830) – Dépannage & travaux | AMCF"
 description: "Électricien à Clapiers (34830), au nord de Montpellier : dépannage électrique, tableau, mise aux normes, volets roulants, domotique. Devis gratuit."
 accroche: "Au nord de Montpellier, entre Jacou et Montferrier-sur-Lez, Clapiers est une commune résidentielle où nous intervenons pour les dépannages, les mises aux normes et les projets de confort."
 secteurs:

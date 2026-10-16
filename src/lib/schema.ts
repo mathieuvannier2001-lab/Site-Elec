@@ -83,7 +83,7 @@ export function entreprise(site: URL, services: { nom: string; url: string }[] =
           },
         }
       : {}),
-    founder: { '@type': 'Person', name: ENTREPRISE.artisan, jobTitle: 'Électricien' },
+    founder: { '@type': 'Person', name: ENTREPRISE.legal.dirigeant, jobTitle: 'Électricien' },
     hasCredential: ENTREPRISE.certifications.map((c) => ({
       '@type': 'EducationalOccupationalCredential',
       name: c.nom,
@@ -187,7 +187,12 @@ export function article(
     inLanguage: 'fr-FR',
     mainEntityOfPage: { '@id': `${url}#page` },
     image: abs(site, opts.image),
-    author: { '@id': idEntreprise(site) },
+    author: {
+      '@type': 'Person',
+      name: `${ENTREPRISE.artisan} ${ENTREPRISE.legal.dirigeant.split(' ').slice(1).join(' ')}`.trim(),
+      jobTitle: 'Électricien',
+      worksFor: { '@id': idEntreprise(site) },
+    },
     publisher: { '@id': idEntreprise(site) },
   };
 }

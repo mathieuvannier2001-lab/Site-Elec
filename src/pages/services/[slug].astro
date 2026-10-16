@@ -7,7 +7,7 @@ import Faq from '../../components/Faq.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import Icon from '../../components/Icon.astro';
 import * as ld from '../../lib/schema';
-import { Picture } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import { photoService } from '../../lib/photos';
 
 export async function getStaticPaths() {
@@ -19,6 +19,9 @@ const { service } = Astro.props;
 const { Content } = await render(service);
 const d = service.data;
 const photo = photoService(service.id);
+const imagePartage = photo
+  ? (await getImage({ src: photo, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 80 })).src
+  : undefined;
 const site = Astro.site!;
 const path = `/services/${service.id}/`;
 
@@ -43,7 +46,13 @@ const schema = [
 ];
 ---
 
-<Base titre={d.titreSeo} description={d.description} schema={schema}>
+<Base
+  titre={d.titreSeo}
+  description={d.description}
+  schema={schema}
+  image={imagePartage}
+  imageAlt={`${d.nomCourt} – AMCF, électricien à Castries et Montpellier`}
+>
   <PageHero eyebrow={d.categorie} titre={d.titre} lead={d.resume} fil={fil} icone={d.icone} />
 
   <section class="section">

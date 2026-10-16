@@ -21,8 +21,6 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => !/\/(merci|404)\/?$/.test(page),
-      changefreq: 'monthly',
-      lastmod: new Date(),
       serialize(item) {
         const path = new URL(item.url).pathname;
         if (path === '/') item.priority = 1.0;

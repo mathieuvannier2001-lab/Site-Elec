@@ -58,4 +58,5 @@ Node.js 22 ou plus récent est nécessaire.
 ## Crédits
 
 - Police Archivo — SIL Open Font License 1.1 (`public/fonts/OFL.txt`).
+- Photos d'illustration des pages services (`src/assets/services/`) — Unsplash, licence Unsplash. À remplacer par de vraies photos de chantiers dès que possible.
 - Certaines icônes s'inspirent du jeu Lucide (licence ISC).

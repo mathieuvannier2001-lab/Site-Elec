@@ -5,7 +5,8 @@ import Icon from '../components/Icon.astro';
 import Logo from '../components/Logo.astro';
 import Gallery from '../components/Gallery.astro';
 import { Picture } from 'astro:assets';
-import { REALISATIONS, PORTRAIT } from '../lib/photos';
+import { REALISATIONS, PORTRAIT, photoService } from '../lib/photos';
+import photoEngagements from '../assets/accueil/suspensions-cuivre.jpg';
 import PanelIllustration from '../components/PanelIllustration.astro';
 import ZoneMap from '../components/ZoneMap.astro';
 import Faq from '../components/Faq.astro';
@@ -155,16 +156,29 @@ const schema = [
         {
           services.map((s, i) => (
             <li class="reveal" style={`--d:${(i % 3) * 0.08}s`}>
-              <a class="service-card" href={`/services/${s.id}/`}>
-                <span class="icon-tile">
-                  <Icon name={s.data.icone} size={26} />
-                </span>
-                <span class="service-cat">{s.data.categorie}</span>
-                <h3>{s.data.nomCourt}</h3>
-                <p>{s.data.resume}</p>
-                <span class="link-arrow">
-                  En savoir plus <Icon name="arrow" size={18} />
-                </span>
+              <a class:list={['service-card', { 'has-media': photoService(s.id) }]} href={`/services/${s.id}/`}>
+                {photoService(s.id) && (
+                  <div class="service-media">
+                    <Picture
+                      src={photoService(s.id)!}
+                      alt=""
+                      formats={['avif', 'webp']}
+                      widths={[400, 640]}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 390px"
+                    />
+                  </div>
+                )}
+                <div class="service-body">
+                  <span class="icon-tile">
+                    <Icon name={s.data.icone} size={26} />
+                  </span>
+                  <span class="service-cat">{s.data.categorie}</span>
+                  <h3>{s.data.nomCourt}</h3>
+                  <p>{s.data.resume}</p>
+                  <span class="link-arrow">
+                    En savoir plus <Icon name="arrow" size={18} />
+                  </span>
+                </div>
               </a>
             </li>
           ))
@@ -336,15 +350,29 @@ const schema = [
 
   <!-- ═══════════════ ENGAGEMENTS ═══════════════ -->
   <section class="section" aria-labelledby="engagements-titre">
-    <div class="container">
-      <div class="section-head section-head--center reveal">
+    <div class="container engagements-wrap">
+      <figure class="engagements-media reveal">
+        <Picture
+          src={photoEngagements}
+          alt="Suspensions lumineuses en cuivre dans un intérieur rénové"
+          formats={['avif', 'webp']}
+          widths={[480, 800, 1100]}
+          sizes="(max-width: 900px) 100vw, 480px"
+        />
+        <figcaption class="engagements-badge">
+          <span class="engagements-badge-icon"><Icon name="sparkles" size={20} /></span>
+          <span><strong>Travail soigné</strong><small>Finitions nettes, chantier propre</small></span>
+        </figcaption>
+      </figure>
+      <div>
+      <div class="section-head reveal">
         <p class="eyebrow">Nos engagements</p>
         <h2 id="engagements-titre">Pourquoi faire appel à AMCF ?</h2>
       </div>
       <ul class="engagements">
         {
           engagements.map((e, i) => (
-            <li class="reveal" style={`--d:${(i % 3) * 0.08}s`}>
+            <li class="reveal" style={`--d:${(i % 2) * 0.08}s`}>
               <span class="icon-tile">
                 <Icon name={e.icone} size={24} />
               </span>
@@ -356,6 +384,7 @@ const schema = [
           ))
         }
       </ul>
+      </div>
     </div>
   </section>
 
@@ -608,9 +637,40 @@ const schema = [
       box-shadow 0.35s var(--ease),
       border-color 0.35s var(--ease);
   }
+  .service-card.has-media {
+    padding: 0;
+  }
+  .service-media {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--ink-2);
+  }
+  .service-media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s var(--ease);
+  }
+  .service-card:hover .service-media :global(img) {
+    transform: scale(1.06);
+  }
+  .service-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+  .has-media .service-body {
+    padding: 0 1.75rem 1.75rem;
+  }
+  .has-media .icon-tile {
+    position: relative;
+    margin-top: -26px;
+    box-shadow: 0 0 0 5px #fff;
+  }
   .service-card::before {
     content: '';
     position: absolute;
+    z-index: 2;
     inset: 0 0 auto;
     height: 3px;
     background: var(--red);
@@ -968,9 +1028,60 @@ const schema = [
   }
 
   /* Engagements */
+  .engagements-wrap {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: center;
+  }
+  .engagements-media {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 28px;
+    background: var(--ink-2);
+  }
+  .engagements-media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .engagements-badge {
+    position: absolute;
+    left: 1.25rem;
+    bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1.1rem 0.8rem 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 16px;
+    background: rgba(12, 13, 16, 0.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #fff;
+    line-height: 1.25;
+  }
+  .engagements-badge strong {
+    display: block;
+    font-stretch: 108%;
+  }
+  .engagements-badge small {
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+  }
+  .engagements-badge-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--red);
+  }
   .engagements {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 2.5rem 2rem;
     margin: 0;
     padding: 0;
@@ -1063,10 +1174,14 @@ const schema = [
   @media (max-width: 900px) {
     .hero-grid,
     .artisan-grid,
+    .engagements-wrap,
     .urgence,
     .zone-grid,
     .metiers-head {
       grid-template-columns: 1fr;
+    }
+    .engagements-media {
+      aspect-ratio: 16 / 10;
     }
     .hero-visual {
       max-width: 460px;

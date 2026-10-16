@@ -37,11 +37,22 @@ const decalage: Record<string, [number, number, 'start' | 'end' | 'middle']> = {
   'saint-aunes': [10, 16, 'start'],
   mauguio: [10, 4, 'start'],
   lattes: [10, 4, 'start'],
+  'saint-bres': [10, 4, 'start'],
+  sussargues: [10, 4, 'start'],
+  'saint-drezery': [-10, 4, 'end'],
+  beaulieu: [0, -13, 'middle'],
+  restinclieres: [10, 4, 'start'],
+  'saint-genies-des-mourgues': [10, 2, 'start'],
+};
+
+// Libellés raccourcis pour les noms trop longs.
+const libelle: Record<string, string> = {
+  'saint-genies-des-mourgues': 'Saint-Geniès',
 };
 ---
 
 <figure class="zone-map">
-  <svg viewBox="0 0 500 600" role="img" aria-labelledby="carte-titre carte-desc">
+  <svg viewBox="0 0 540 600" role="img" aria-labelledby="carte-titre carte-desc">
     <title id="carte-titre">Zone d’intervention d’AMCF autour de Castries</title>
     <desc id="carte-desc">
       Carte schématique : Castries au centre, Montpellier au sud-ouest, et les communes desservies dans un rayon
@@ -56,7 +67,7 @@ const decalage: Record<string, [number, number, 'start' | 'end' | 'middle']> = {
         <path d="M25 0H0V25" fill="none" stroke="rgba(255,255,255,.04)"></path>
       </pattern>
     </defs>
-    <rect width="500" height="600" fill="url(#zm-grid)"></rect>
+    <rect width="540" height="600" fill="url(#zm-grid)"></rect>
     <circle cx={cx} cy={cy} r={20 * KM} fill="url(#zm-glow)"></circle>
     {
       [5, 10, 15, 20].map((km) => (
@@ -83,7 +94,7 @@ const decalage: Record<string, [number, number, 'start' | 'end' | 'middle']> = {
             <circle cx={p.x} cy={p.y} r={p.slug === 'montpellier' ? 9 : p.page ? 5.5 : 3.5} />
             {p.page && (
               <text x={p.x + dx} y={p.y + dy} text-anchor={anchor} class={p.slug === 'montpellier' ? 'zm-big' : ''}>
-                {p.nom}
+                {libelle[p.slug] ?? p.nom}
               </text>
             )}
             <title>{p.nom}</title>

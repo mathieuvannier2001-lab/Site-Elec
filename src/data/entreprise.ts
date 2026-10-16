@@ -91,7 +91,7 @@ export const ENTREPRISE = {
   // (méthode « balise HTML » : ne copier que la valeur de l'attribut content).
   verification: {
     google: '77P7jr3-JPi_DwO-j-vYOjOW-aTmmfgGBeeYNZrwbZY',
-    bing: '',
+    bing: '6ED177457CF210F86EBE961DDB5116E2',
   },
 
   hebergeur: {

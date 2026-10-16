@@ -76,7 +76,7 @@ export const ENTREPRISE = {
   // Codes de vérification fournis par Google Search Console et Bing Webmaster Tools
   // (méthode « balise HTML » : ne copier que la valeur de l'attribut content).
   verification: {
-    google: '',
+    google: '77P7jr3-JPi_DwO-j-vYOjOW-aTmmfgGBeeYNZrwbZY',
     bing: '',
   },
 

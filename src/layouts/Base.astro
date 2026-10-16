@@ -72,6 +72,8 @@ const jsonLd = schema.length ? JSON.stringify(graphe(...schema)) : null;
     <meta name="geo.position" content={`${ENTREPRISE.geo.lat};${ENTREPRISE.geo.lng}`} />
     <meta name="ICBM" content={`${ENTREPRISE.geo.lat}, ${ENTREPRISE.geo.lng}`} />
 
+    {ENTREPRISE.verification.google && <meta name="google-site-verification" content={ENTREPRISE.verification.google} />}
+    {ENTREPRISE.verification.bing && <meta name="msvalidate.01" content={ENTREPRISE.verification.bing} />}
     <meta name="theme-color" content="#0c0d10" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />

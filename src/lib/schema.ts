@@ -83,6 +83,12 @@ export function entreprise(site: URL, services: { nom: string; url: string }[] =
           },
         }
       : {}),
+    founder: { '@type': 'Person', name: ENTREPRISE.artisan, jobTitle: 'Électricien' },
+    hasCredential: ENTREPRISE.certifications.map((c) => ({
+      '@type': 'EducationalOccupationalCredential',
+      name: c.nom,
+      description: c.detail,
+    })),
     sameAs: nonVides(Object.values(ENTREPRISE.reseaux)),
   };
 }

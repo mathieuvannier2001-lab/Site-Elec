@@ -15,7 +15,7 @@ export const GET: APIRoute = async ({ site }) => {
 
   const body = `# ${ENTREPRISE.nom} – Électricien à Castries et Montpellier
 
-> ${ENTREPRISE.nomLong}. Électricien basé à Castries (${ENTREPRISE.adresse.codePostal}, Hérault), intervenant à Montpellier et dans sa périphérie (rayon d'environ ${ENTREPRISE.rayonKm} km). Dépannage électrique 7j/7 sur demande, courant fort, courant faible, automatismes et maintenance, pour particuliers et professionnels. Téléphone : ${ENTREPRISE.telephone}. Devis gratuit.
+> ${ENTREPRISE.nomLong}. Électricien basé à Castries (${ENTREPRISE.adresse.codePostal}, Hérault), intervenant à Montpellier et dans sa périphérie (rayon d'environ ${ENTREPRISE.rayonKm} km). Dépannage électrique 7j/7 sur demande, courant fort, courant faible, automatismes et maintenance, pour particuliers et professionnels. Électricien : ${ENTREPRISE.artisan}. Qualifications : ${ENTREPRISE.certifications.map((c) => c.nom).join(', ')}. Téléphone : ${ENTREPRISE.telephone}. Devis gratuit.
 
 ## Services
 ${services.map((s) => `- [${s.data.nomCourt}](${url(`/services/${s.id}/`)}): ${s.data.resume}`).join('\n')}

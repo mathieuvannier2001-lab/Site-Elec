@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
+import Logo from '../components/Logo.astro';
 import PanelIllustration from '../components/PanelIllustration.astro';
 import ZoneMap from '../components/ZoneMap.astro';
 import Faq from '../components/Faq.astro';
@@ -36,7 +37,7 @@ const engagements = [
   { icone: 'file', titre: 'Devis gratuit et détaillé', texte: 'Chaque poste est chiffré et expliqué. Vous décidez en connaissance de cause.' },
   { icone: 'clock', titre: '7 jours sur 7', texte: 'Joignable toute la semaine, dépannage le week-end sur demande.' },
   { icone: 'shield', titre: 'Norme NF C 15-100', texte: 'Des travaux conformes, réalisés avec du matériel de marques reconnues.' },
-  { icone: 'user', titre: 'Un interlocuteur unique', texte: 'L’électricien que vous avez au téléphone est celui qui vient chez vous.' },
+  { icone: 'user', titre: 'Un interlocuteur unique', texte: `${ENTREPRISE.artisan}, que vous avez au téléphone, est celui qui intervient chez vous.` },
   { icone: 'sparkles', titre: 'Chantier propre', texte: 'Protection des sols et des meubles, nettoyage en fin d’intervention.' },
   { icone: 'building', titre: 'Particuliers & pros', texte: 'Maisons, appartements, commerces, bureaux et locaux d’activité.' },
 ];
@@ -166,6 +167,47 @@ const schema = [
           ))
         }
       </ul>
+    </div>
+  </section>
+
+  <!-- ═══════════════ L'ÉLECTRICIEN ═══════════════ -->
+  <section class="section artisan" aria-labelledby="artisan-titre">
+    <div class="container artisan-grid">
+      <div class="artisan-card reveal">
+        <Logo class="artisan-mono" />
+        <p class="artisan-name">{ENTREPRISE.artisan}</p>
+        <p class="artisan-role">Électricien · fondateur d’AMCF</p>
+        <p class="artisan-place"><Icon name="pin" size={16} /> Castries, Hérault</p>
+        <span class="artisan-badge"><Icon name="badge" size={18} /> Qualifié & assuré</span>
+      </div>
+      <div class="reveal" style="--d:.1s">
+        <p class="eyebrow">Votre électricien</p>
+        <h2 id="artisan-titre">{ENTREPRISE.artisan}, l’électricien derrière AMCF</h2>
+        <p class="artisan-lead">
+          Basé à Castries, {ENTREPRISE.artisan} a créé AMCF pour offrir aux particuliers et aux professionnels de
+          Montpellier et de sa périphérie un électricien complet : courant fort, courant faible, automatismes et
+          maintenance.
+        </p>
+        <p class="artisan-text">
+          C’est lui qui vous répond au téléphone, lui qui établit votre devis et lui qui intervient chez vous. Un seul
+          interlocuteur, qui connaît votre installation et s’engage sur la qualité de son travail.
+        </p>
+        <ul class="certifs">
+          {
+            ENTREPRISE.certifications.map((c) => (
+              <li>
+                <span class="certif-icon">
+                  <Icon name="badge" size={22} />
+                </span>
+                <span>
+                  <strong>{c.nom}</strong>
+                  <small>{c.detail}</small>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
     </div>
   </section>
 
@@ -572,6 +614,124 @@ const schema = [
     font-size: 0.975rem;
   }
 
+  /* L'électricien */
+  .artisan-grid {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: clamp(2rem, 6vw, 5.5rem);
+    align-items: center;
+  }
+  .artisan-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    aspect-ratio: 4 / 5;
+    padding: clamp(1.75rem, 4vw, 2.5rem);
+    overflow: hidden;
+    border-radius: 32px;
+    background:
+      radial-gradient(420px 320px at 85% 10%, rgba(210, 46, 36, 0.5), transparent 70%),
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px) 0 0 / 36px 36px,
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px) 0 0 / 36px 36px,
+      var(--ink);
+    color: #fff;
+    isolation: isolate;
+  }
+  .artisan-card :global(.artisan-mono) {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    z-index: -1;
+    width: 78%;
+    color: var(--red);
+    opacity: 0.9;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 20px 40px rgba(210, 46, 36, 0.35));
+  }
+  .artisan-name {
+    margin: 0;
+    font-size: clamp(2.6rem, 5vw, 3.6rem);
+    font-weight: 800;
+    font-stretch: 122%;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .artisan-role {
+    margin: 0.5rem 0 0.25rem;
+    color: var(--ink-text);
+    font-weight: 600;
+  }
+  .artisan-place {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+  }
+  .artisan-place :global(svg) {
+    color: var(--red-bright);
+  }
+  .artisan-badge {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .artisan-badge :global(svg) {
+    color: var(--red);
+  }
+  .artisan-lead {
+    font-size: clamp(1.1rem, 1.5vw, 1.25rem);
+    color: var(--text);
+  }
+  .artisan-text {
+    color: var(--muted);
+  }
+  .certifs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .certifs li {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .certifs strong {
+    display: block;
+    line-height: 1.25;
+  }
+  .certifs small {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .certif-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--red-soft);
+    color: var(--red);
+  }
+
   /* Urgence + process */
   .urgence {
     display: grid;
@@ -851,6 +1011,7 @@ const schema = [
   }
   @media (max-width: 900px) {
     .hero-grid,
+    .artisan-grid,
     .urgence,
     .zone-grid,
     .metiers-head {
@@ -875,6 +1036,16 @@ const schema = [
     }
     .hero-ctas .btn {
       width: 100%;
+    }
+    .certifs {
+      grid-template-columns: 1fr;
+    }
+    .artisan-card {
+      aspect-ratio: 1;
+    }
+    .artisan-card :global(.artisan-mono) {
+      top: 16%;
+      width: 58%;
     }
     .hl {
       white-space: normal;

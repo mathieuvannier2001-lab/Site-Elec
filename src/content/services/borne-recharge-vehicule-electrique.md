@@ -20,7 +20,7 @@ faq:
   - q: "Faut-il augmenter la puissance de mon compteur ?"
     r: "Pas forcément. Un délestage ou une programmation en heures creuses permet souvent de garder votre abonnement actuel. Nous faisons le bilan de vos consommations avant de vous conseiller."
   - q: "Qui peut installer une borne de recharge ?"
-    r: "Pour une borne de plus de 3,7 kW, la réglementation impose un installateur titulaire de la qualification IRVE. C’est aussi une condition pour bénéficier des aides à l’installation."
+    r: "Pour une borne de plus de 3,7 kW, la réglementation impose un installateur titulaire de la qualification IRVE. C’est le cas d’AMCF : votre installation est conforme et éligible aux aides à l’installation."
 ---
 
 ## Rechargez chez vous, simplement et en sécurité
@@ -41,4 +41,4 @@ Le « droit à la prise » permet à un copropriétaire ou à un locataire d’i
 
 ## Bon à savoir
 
-L’installation d’une borne de plus de **3,7 kW** doit être réalisée par un professionnel **qualifié IRVE** : c’est une exigence réglementaire et une condition pour bénéficier des aides. Pensez-y aussi lors d’une [rénovation électrique](/services/installation-renovation-electrique/) : une gaine posée dès maintenant vers le garage simplifiera tout.
+L’installation d’une borne de plus de **3,7 kW** doit être réalisée par un professionnel **qualifié IRVE** : c’est une exigence réglementaire et une condition pour bénéficier des aides. **AMCF est qualifié IRVE.** Pensez-y aussi lors d’une [rénovation électrique](/services/installation-renovation-electrique/) : une gaine posée dès maintenant vers le garage simplifiera tout.

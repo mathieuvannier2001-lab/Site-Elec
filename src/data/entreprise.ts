@@ -11,6 +11,7 @@ export const ENTREPRISE = {
   nom: 'AMCF',
   nomLong: 'AMCF – Automatisme Maintenance Courant Fort et Faible',
   metier: 'Électricien',
+  artisan: 'Fabien', // prénom de l'électricien, affiché sur le site
   signature: 'Automatisme · Maintenance · Courant fort et faible',
 
   telephone: '06 65 95 33 04',
@@ -38,6 +39,14 @@ export const ENTREPRISE = {
   ],
   disponibilite: 'Disponible 7j/7 · dépannage sur demande',
 
+  // Qualifications et garanties affichées sur le site et transmises à Google.
+  certifications: [
+    { nom: 'Qualification IRVE', detail: 'Installation de bornes de recharge' },
+    { nom: 'Assurance décennale', detail: 'Travaux garantis 10 ans' },
+    { nom: 'Habilitations électriques', detail: 'Interventions en sécurité' },
+    { nom: 'Norme NF C 15-100', detail: 'Installations conformes' },
+  ],
+
   // Rayon d'intervention autour de Castries (en km), utilisé pour Google.
   rayonKm: 30,
 
@@ -52,12 +61,21 @@ export const ENTREPRISE = {
   // Mentions légales — À COMPLÉTER avant la mise en ligne.
   legal: {
     formeJuridique: '[forme juridique – ex. EI, EURL, SASU]',
-    dirigeant: '[nom du dirigeant]',
+    dirigeant: 'Fabien [NOM À COMPLÉTER]',
     siret: '[numéro SIRET]',
     rcsOuRm: '[immatriculation RCS ou RNE]',
     tva: '[numéro de TVA intracommunautaire]',
-    assurance: '[assureur et numéro de contrat d’assurance décennale]',
+    // Valeur provisoire : remplacer par l'assureur, le n° de contrat et la zone couverte réels.
+    assurance:
+      'Assurance responsabilité civile décennale – Assureur : [À COMPLÉTER] – Contrat n° 0000000 – Couverture : France métropolitaine',
     mediateur: '[nom et site du médiateur de la consommation]',
+  },
+
+  // Codes de vérification fournis par Google Search Console et Bing Webmaster Tools
+  // (méthode « balise HTML » : ne copier que la valeur de l'attribut content).
+  verification: {
+    google: '',
+    bing: '',
   },
 
   hebergeur: {

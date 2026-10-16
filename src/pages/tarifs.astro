@@ -1,0 +1,363 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import AsideCall from '../components/AsideCall.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import * as ld from '../lib/schema';
+import { ENTREPRISE, telHref } from '../data/entreprise';
+import { DEPANNAGE, GRILLE, MISE_A_JOUR_TARIFS, type Ligne } from '../data/tarifs';
+
+const site = Astro.site!;
+const path = '/tarifs/';
+const titre = 'Tarifs électricien à Castries et Montpellier | AMCF';
+const description =
+  'Tarifs d’AMCF, électricien à Castries : dépannage, tableau électrique, mise aux normes, borne de recharge, portail et volets. Prix TTC indicatifs, devis gratuit.';
+const fil = [
+  { nom: 'Accueil', path: '/' },
+  { nom: 'Tarifs', path },
+];
+
+const services = new Map((await getCollection('services')).map((s) => [s.id, s.data.nomCourt]));
+const nombre = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 });
+const euros = (n: number) => `${nombre.format(n)} €`;
+const prix = (l: Ligne) => {
+  if (l.min === null || l.max === null) return 'Sur devis';
+  const base = l.min === l.max ? euros(l.min) : `${nombre.format(l.min)} à ${euros(l.max)}`;
+  return l.unite ? `${base} ${l.unite}` : base;
+};
+const annonce = 'Annoncé au téléphone avant le déplacement';
+const maj = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(new Date(MISE_A_JOUR_TARIFS));
+
+const depannage = [
+  {
+    nom: 'Déplacement et première heure de diagnostic',
+    valeur: DEPANNAGE.forfaitPremiereHeure !== null ? euros(DEPANNAGE.forfaitPremiereHeure) : annonce,
+  },
+  {
+    nom: 'Heure de main-d’œuvre supplémentaire',
+    valeur:
+      DEPANNAGE.tauxHoraire !== null
+        ? `${euros(DEPANNAGE.tauxHoraire)} de l’heure${DEPANNAGE.decompteTemps ? `, décomptée ${DEPANNAGE.decompteTemps}` : ''}`
+        : annonce,
+  },
+  {
+    nom: 'Soirs, week-ends et jours fériés',
+    valeur: DEPANNAGE.majoration ? `Majoration de ${DEPANNAGE.majoration}` : 'Majoration annoncée avant l’intervention',
+  },
+  { nom: 'Pièces et matériel', valeur: 'Facturés en plus, détaillés sur le devis' },
+  { nom: 'Devis', valeur: 'Gratuit' },
+];
+
+const engagements = [
+  { icone: 'file', titre: 'Devis gratuit et détaillé', texte: 'Chaque prestation, chaque fourniture et son prix, avant le début des travaux.' },
+  { icone: 'phone', titre: 'Prix annoncé avant de venir', texte: 'Pour un dépannage, vous connaissez le tarif dès l’appel, avant tout déplacement.' },
+  { icone: 'check', titre: 'Pas de supplément surprise', texte: 'Un imprévu sur le chantier ? Nous vous en parlons et vous validez avant toute dépense.' },
+  { icone: 'euro', titre: 'La bonne TVA', texte: 'Taux réduit appliqué directement sur la facture quand votre logement y a droit.' },
+];
+
+const faq = [
+  {
+    q: 'Le devis est-il payant ?',
+    r: 'Non. Le devis est gratuit et détaillé pour tous les travaux. Pour un dépannage, le tarif est annoncé au téléphone avant le déplacement, puis confirmé sur place avant l’intervention.',
+  },
+  {
+    q: 'Pourquoi des fourchettes plutôt qu’un prix fixe ?',
+    r: 'Parce que le prix dépend de votre installation : état du tableau, longueur de câble, accès, matériel choisi. Les fourchettes donnent un ordre de grandeur honnête ; le prix exact figure sur le devis, après visite ou échange de photos.',
+  },
+  {
+    q: 'Quelle TVA s’applique sur les travaux d’électricité ?',
+    r: 'Dans un logement achevé depuis plus de deux ans, les travaux d’amélioration et d’entretien bénéficient en principe d’une TVA à 10 %. Dans le neuf, c’est 20 %. L’installation d’une borne de recharge par un professionnel peut bénéficier du taux de 5,5 %, sous conditions.',
+  },
+  {
+    q: 'Les dépannages du week-end coûtent-ils plus cher ?',
+    r: 'Oui, une majoration s’applique les soirs, week-ends et jours fériés. Elle vous est toujours annoncée avant l’intervention. Souvent, une mise en sécurité suffit le jour même et les travaux sont programmés en semaine, sans majoration.',
+  },
+  {
+    q: 'Comment payer ?',
+    r: 'Par virement, chèque ou espèces. Pour les travaux importants, un acompte peut être demandé à la signature du devis ; il est indiqué sur celui-ci.',
+  },
+];
+
+const schema = [
+  ld.entreprise(site),
+  ld.pageWeb(site, { path, titre, description, avecFilAriane: true }),
+  ld.filAriane(site, path, fil),
+  ld.faq(site, path, faq),
+];
+---
+
+<Base titre={titre} description={description} schema={schema}>
+  <PageHero
+    eyebrow="Tarifs"
+    titre="Tarifs électricien à Castries et Montpellier"
+    lead="Des prix clairs avant chaque intervention : nos tarifs de dépannage et des fourchettes indicatives pour les travaux les plus courants. Le devis est toujours gratuit."
+    fil={fil}
+    icone="euro"
+  />
+
+  <section class="section">
+    <div class="container layout">
+      <article class="main">
+        <ul class="engagements" aria-label="Nos engagements sur les prix">
+          {
+            engagements.map((e) => (
+              <li class="engagement">
+                <span class="engagement-icon">
+                  <Icon name={e.icone} size={22} />
+                </span>
+                <strong>{e.titre}</strong>
+                <span>{e.texte}</span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <section class="bloc" aria-labelledby="depannage-titre">
+          <h2 id="depannage-titre">Dépannage électrique</h2>
+          <p class="bloc-intro">
+            Pour une panne à Castries, Montpellier ou dans les communes alentour. Le tarif vous est donné au téléphone,
+            avant tout déplacement.
+          </p>
+          <div class="table-wrap">
+            <table class="tarifs">
+              <thead>
+                <tr><th scope="col">Prestation</th><th scope="col">Tarif TTC</th></tr>
+              </thead>
+              <tbody>
+                {
+                  depannage.map((l) => (
+                    <tr>
+                      <th scope="row">{l.nom}</th>
+                      <td>{l.valeur}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+          <a class="btn btn--red" href={telHref}>
+            <Icon name="phone" size={18} /> Demander le tarif : {ENTREPRISE.telephone}
+          </a>
+        </section>
+
+        <section class="bloc" aria-labelledby="travaux-titre">
+          <h2 id="travaux-titre">Prix indicatifs des travaux courants</h2>
+          <p class="bloc-intro">
+            Prix TTC, fourniture et pose comprises sauf mention contraire. Ce sont des ordres de grandeur pour des
+            travaux courants : le prix exact dépend de votre installation et figure sur le devis gratuit.
+          </p>
+          {
+            GRILLE.map((g) => (
+              <div class="groupe">
+                <div class="groupe-head">
+                  <h3>{g.titre}</h3>
+                  {services.has(g.service) && (
+                    <a class="link-arrow" href={`/services/${g.service}/`}>
+                      {services.get(g.service)} <Icon name="arrow" size={16} />
+                    </a>
+                  )}
+                </div>
+                <div class="table-wrap">
+                  <table class="tarifs">
+                    <thead>
+                      <tr><th scope="col">Prestation</th><th scope="col">Prix indicatif TTC</th></tr>
+                    </thead>
+                    <tbody>
+                      {g.lignes.map((l) => (
+                        <tr>
+                          <th scope="row">
+                            {l.nom}
+                            {l.note && <small> ({l.note})</small>}
+                          </th>
+                          <td class={l.min === null ? 'devis' : undefined}>{prix(l)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))
+          }
+          <p class="maj">Tarifs mis à jour en {maj}.</p>
+        </section>
+
+        <section class="bloc prose" aria-labelledby="varie-titre">
+          <h2 id="varie-titre">Ce qui fait varier le prix</h2>
+          <ul>
+            <li><strong>L’état de l’installation</strong> : prise de terre, câbles anciens, tableau saturé.</li>
+            <li><strong>L’accès</strong> : combles, vide sanitaire, murs en pierre, distance jusqu’au tableau.</li>
+            <li><strong>Le matériel choisi</strong> : marque, puissance, options connectées.</li>
+            <li><strong>L’urgence</strong> : intervention le soir ou le week-end.</li>
+          </ul>
+          <p>
+            Pour aller plus loin, lisez nos articles sur le <a href="/conseils/prix-tableau-electrique/">prix d’un tableau
+            électrique</a> et sur les <a href="/conseils/aides-borne-de-recharge/">aides pour une borne de recharge</a>.
+          </p>
+        </section>
+      </article>
+
+      <aside class="aside">
+        <div class="aside-sticky">
+          <AsideCall />
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <Faq items={faq} titre="Tarifs : vos questions" />
+
+  <CtaBand />
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+  .main {
+    display: grid;
+    gap: 3.5rem;
+    min-width: 0;
+  }
+  .engagements {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .engagement {
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+    padding: 1.25rem;
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+  }
+  .engagement strong {
+    font-stretch: 108%;
+  }
+  .engagement span:last-child {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .engagement-icon {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    margin-bottom: 0.35rem;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+  }
+  .bloc {
+    display: grid;
+    gap: 1.25rem;
+    min-width: 0;
+  }
+  .bloc h2 {
+    margin: 0;
+  }
+  .bloc-intro {
+    margin: 0;
+    color: var(--muted);
+    max-width: 65ch;
+  }
+  .bloc .btn {
+    justify-self: start;
+  }
+  .groupe {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .groupe-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+  }
+  .groupe-head h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  .groupe-head .link-arrow {
+    font-size: 0.9rem;
+  }
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .tarifs {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.97rem;
+  }
+  .tarifs th,
+  .tarifs td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+  .tarifs tbody tr:last-child th,
+  .tarifs tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .tarifs thead th {
+    background: var(--paper);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .tarifs tbody th {
+    font-weight: 600;
+  }
+  .tarifs tbody th small {
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .tarifs td {
+    width: 42%;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .tarifs td.devis {
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .maj {
+    margin: 0.5rem 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .aside-sticky {
+    position: sticky;
+    top: calc(var(--header-h) + 1.5rem);
+  }
+  @media (max-width: 960px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .engagements {
+      grid-template-columns: 1fr;
+    }
+    .tarifs th,
+    .tarifs td {
+      padding: 0.75rem 0.8rem;
+    }
+  }
+</style>

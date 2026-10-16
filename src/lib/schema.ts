@@ -22,6 +22,10 @@ export function entreprise(site: URL, services: { nom: string; url: string }[] =
     '@id': idEntreprise(site),
     name: ENTREPRISE.nom,
     alternateName: ENTREPRISE.nomLong,
+    legalName: ENTREPRISE.legal.raisonSociale,
+    foundingDate: String(ENTREPRISE.legal.anneeCreation),
+    vatID: ENTREPRISE.legal.tva.replaceAll(' ', ''),
+    identifier: { '@type': 'PropertyValue', propertyID: 'SIRET', value: ENTREPRISE.legal.siret.replaceAll(' ', '') },
     description:
       'Électricien basé à Castries (34160) : dépannage électrique 7j/7 sur demande, tableau électrique, mise aux normes, rénovation, automatismes de portail et volets, courant faible et maintenance. Intervention à Montpellier et dans sa périphérie.',
     url: abs(site, '/'),

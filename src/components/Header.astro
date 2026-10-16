@@ -66,6 +66,9 @@ const actif = (prefix: string) => (prefix === '/' ? path === '/' : path.startsWi
           )
         }
         <li>
+          <a class="nav-link" href="/tarifs/" aria-current={actif('/tarifs/') ? 'page' : undefined}>Tarifs</a>
+        </li>
+        <li>
           <a class="nav-link" href="/conseils/" aria-current={actif('/conseils/') ? 'page' : undefined}>Conseils</a>
         </li>
         <li>
@@ -105,6 +108,7 @@ const actif = (prefix: string) => (prefix === '/' ? path === '/' : path.startsWi
       <ul class="mobile-links">
         <li><a href="/zones-intervention/">Zones d’intervention</a></li>
         {REALISATIONS.length > 0 && <li><a href="/realisations/">Réalisations</a></li>}
+        <li><a href="/tarifs/">Tarifs</a></li>
         <li><a href="/conseils/">Conseils</a></li>
         <li><a href="/contact/">Contact & devis</a></li>
       </ul>
@@ -182,6 +186,7 @@ const actif = (prefix: string) => (prefix === '/' ? path === '/' : path.startsWi
   .nav-link {
     display: inline-flex;
     align-items: center;
+    white-space: nowrap;
     gap: 0.3rem;
     padding: 0.6rem 0.9rem;
     border-radius: 999px;
@@ -369,9 +374,13 @@ const actif = (prefix: string) => (prefix === '/' ? path === '/' : path.startsWi
     width: 100%;
   }
 
-  @media (max-width: 1080px) {
+  @media (max-width: 1180px) {
     .nav-link {
-      padding-inline: 0.65rem;
+      padding-inline: 0.55rem;
+      font-size: 0.9rem;
+    }
+    .brand-sub {
+      display: none;
     }
   }
   @media (max-width: 960px) {

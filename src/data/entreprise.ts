@@ -60,17 +60,24 @@ export const ENTREPRISE = {
     linkedin: '',
   },
 
-  // Mentions légales — À COMPLÉTER avant la mise en ligne.
+  // Mentions légales (source : registre national des entreprises, SIREN 803 219 997).
   legal: {
-    formeJuridique: '[forme juridique – ex. EI, EURL, SASU]',
+    raisonSociale: 'AMCF',
+    formeJuridique: 'SAS à associé unique (SASU) au capital de 1 500 €',
     dirigeant: 'Fabien Bonfils',
-    siret: '[numéro SIRET]',
-    rcsOuRm: '[immatriculation RCS ou RNE]',
-    tva: '[numéro de TVA intracommunautaire]',
-    // Valeur provisoire : remplacer par l'assureur, le n° de contrat et la zone couverte réels.
-    assurance:
-      'Assurance responsabilité civile décennale – Assureur : [À COMPLÉTER] – Contrat n° 0000000 – Couverture : France métropolitaine',
-    mediateur: '[nom et site du médiateur de la consommation]',
+    qualiteDirigeant: 'Président',
+    siege: '211 rue des États du Languedoc, 34160 Castries',
+    siren: '803219997',
+    siret: '803 219 997 00027',
+    rcsOuRm: 'RCS Montpellier 803 219 997',
+    tva: 'FR68 803 219 997',
+    codeNaf: '4321A – Travaux d’installation électrique dans tous locaux',
+    anneeCreation: 2014,
+    // À COMPLÉTER : nom de l'assureur décennale, n° de contrat et zone couverte.
+    // Tant que c'est vide, le site indique que ces informations figurent sur les devis et factures.
+    assurance: '',
+    // À COMPLÉTER : nom, adresse et site du médiateur de la consommation (obligatoire).
+    mediateur: '',
   },
 
   // Formulaire de devis : clé d'accès Web3Forms (gratuite, à créer sur web3forms.com

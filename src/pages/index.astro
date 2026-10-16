@@ -107,7 +107,7 @@ const schema = [
         <ul class="hero-trust">
           <li><Icon name="clock" size={18} /> 7j/7 sur demande</li>
           <li><Icon name="file" size={18} /> Devis gratuit</li>
-          <li><Icon name="pin" size={18} /> Basé à Castries</li>
+          <li><Icon name="pin" size={18} /> À Castries depuis {ENTREPRISE.legal.anneeCreation}</li>
           <li><Icon name="building" size={18} /> Particuliers & pros</li>
         </ul>
       </div>
@@ -206,7 +206,7 @@ const schema = [
           )
         }
         <p class="artisan-name">{ENTREPRISE.artisan}</p>
-        <p class="artisan-role">Électricien · fondateur d’AMCF</p>
+        <p class="artisan-role">Électricien · fondateur d’AMCF en {ENTREPRISE.legal.anneeCreation}</p>
         <p class="artisan-place"><Icon name="pin" size={16} /> Castries, Hérault</p>
         <span class="artisan-badge"><Icon name="badge" size={18} /> Qualifié & assuré</span>
       </div>
@@ -214,7 +214,7 @@ const schema = [
         <p class="eyebrow">Votre électricien</p>
         <h2 id="artisan-titre">{ENTREPRISE.artisan}, l’électricien derrière AMCF</h2>
         <p class="artisan-lead">
-          Basé à Castries, {ENTREPRISE.artisan} a créé AMCF pour offrir aux particuliers et aux professionnels de
+          Basé à Castries, {ENTREPRISE.artisan} a créé AMCF en {ENTREPRISE.legal.anneeCreation} pour offrir aux particuliers et aux professionnels de
           Montpellier et de sa périphérie un électricien complet : courant fort, courant faible, automatismes et
           maintenance.
         </p>

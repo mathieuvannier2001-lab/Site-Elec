@@ -6,7 +6,11 @@ import { ENTREPRISE, telHref } from '../data/entreprise';
 import { REALISATIONS } from '../lib/photos';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.ordre - b.data.ordre);
-const villes = (await getCollection('villes')).sort((a, b) => a.data.nom.localeCompare(b.data.nom, 'fr'));
+// Le pied de page ne liste que les communes principales ; les autres sont sur /zones-intervention/.
+const PRINCIPALES = ['castries', 'montpellier', 'le-cres', 'vendargues', 'castelnau-le-lez', 'jacou', 'teyran', 'baillargues', 'saint-aunes', 'mauguio', 'lattes', 'clapiers'];
+const villes = (await getCollection('villes'))
+  .filter((v) => PRINCIPALES.includes(v.id))
+  .sort((a, b) => a.data.nom.localeCompare(b.data.nom, 'fr'));
 const annee = new Date().getFullYear();
 ---
 
@@ -80,6 +84,7 @@ const annee = new Date().getFullYear();
         <p class="footer-title">Informations</p>
         <ul>
           <li><a href="/contact/">Contact & devis gratuit</a></li>
+          <li><a href="/tarifs/">Nos tarifs</a></li>
           {REALISATIONS.length > 0 && <li><a href="/realisations/">Nos réalisations</a></li>}
           <li><a href="/conseils/">Conseils électricité</a></li>
           <li><a href="/mentions-legales/">Mentions légales</a></li>

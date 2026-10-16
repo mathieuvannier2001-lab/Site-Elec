@@ -7,7 +7,7 @@ import * as ld from '../lib/schema';
 const site = Astro.site!;
 const path = '/mentions-legales/';
 const titre = 'Mentions légales – AMCF, électricien à Castries';
-const description = 'Mentions légales du site AMCF, électricien à Castries (34160) : éditeur, hébergeur, assurance et médiation de la consommation.';
+const description = 'Mentions légales d’AMCF, SASU d’électricité à Castries (34160) : éditeur, SIRET, hébergeur, assurance et médiation de la consommation.';
 const fil = [
   { nom: 'Accueil', path: '/' },
   { nom: 'Mentions légales', path },
@@ -29,18 +29,23 @@ const a = ENTREPRISE.adresse;
         <p>
           <strong>{ENTREPRISE.nomLong}</strong><br />
           {L.formeJuridique}<br />
-          {a.rue && <>{a.rue}<br /></>}
-          {a.codePostal} {a.ville}, France<br />
-          Téléphone : {ENTREPRISE.telephone}<br />
-          {ENTREPRISE.email && <>E-mail : {ENTREPRISE.email}<br /></>}
+          Siège social : {L.siege}<br />
           SIRET : {L.siret}<br />
-          Immatriculation : {L.rcsOuRm}<br />
-          TVA intracommunautaire : {L.tva}
+          {L.rcsOuRm}<br />
+          TVA intracommunautaire : {L.tva}<br />
+          Code NAF : {L.codeNaf}<br />
+          Téléphone : {ENTREPRISE.telephone}<br />
+          {ENTREPRISE.email && <>E-mail : {ENTREPRISE.email}</>}
         </p>
-        <p>Directeur de la publication : {L.dirigeant}</p>
+        <p>Directeur de la publication : {L.dirigeant}, {L.qualiteDirigeant.toLowerCase()}.</p>
 
         <h2>Assurance professionnelle</h2>
-        <p>{L.assurance}</p>
+        <p>
+          {
+            L.assurance ||
+              'L’entreprise est titulaire d’une assurance responsabilité civile décennale. Le nom de l’assureur, le numéro de contrat et la zone géographique couverte figurent sur chaque devis et chaque facture.'
+          }
+        </p>
 
         <h2>Hébergement</h2>
         <p>
@@ -52,8 +57,9 @@ const a = ENTREPRISE.adresse;
         <h2>Médiation de la consommation</h2>
         <p>
           Conformément aux articles L.612-1 et suivants du Code de la consommation, en cas de litige non résolu
-          directement avec nous, le client consommateur peut recourir gratuitement au médiateur de la consommation
-          suivant : {L.mediateur}.
+          directement avec nous, le client consommateur peut recourir gratuitement à un médiateur de la consommation{
+            L.mediateur ? <> : {L.mediateur}.</> : <>. Ses coordonnées figurent sur nos devis et factures.</>
+          }
         </p>
 
         <h2>Propriété intellectuelle</h2>

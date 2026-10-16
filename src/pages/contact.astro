@@ -22,6 +22,13 @@ const schema = [
   ld.pageWeb(site, { path, titre, description, type: 'ContactPage', avecFilAriane: true }),
   ld.filAriane(site, path, fil),
 ];
+
+// Avec une clé Web3Forms, les demandes partent directement par e-mail ;
+// sans clé, c'est Netlify Forms qui les reçoit.
+const cleWeb3forms = ENTREPRISE.formulaire.web3formsCle;
+const attributsFormulaire = cleWeb3forms
+  ? { action: 'https://api.web3forms.com/submit' }
+  : { action: '/merci/', 'data-netlify': 'true', 'netlify-honeypot': 'bot-field' };
 ---
 
 <Base titre={titre} description={description} schema={schema}>
@@ -84,11 +91,27 @@ const schema = [
         <h2>Demande de devis gratuit</h2>
         <p class="form-intro">Réponse rapide. Les champs marqués d’un * sont obligatoires.</p>
 
-        <form name="devis" method="POST" action="/merci/" data-netlify="true" netlify-honeypot="bot-field" class="form">
-          <input type="hidden" name="form-name" value="devis" />
-          <p class="hp" aria-hidden="true">
-            <label>Ne pas remplir : <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
-          </p>
+        <form name="devis" method="POST" class="form" {...attributsFormulaire}>
+          {
+            cleWeb3forms ? (
+              <>
+                <input type="hidden" name="access_key" value={cleWeb3forms} />
+                <input type="hidden" name="subject" value="Nouvelle demande de devis – site AMCF" />
+                <input type="hidden" name="from_name" value="Site AMCF" />
+                <input type="hidden" name="redirect" value={new URL('/merci/', site).href} />
+                <p class="hp" aria-hidden="true">
+                  <label>Ne pas remplir : <input type="checkbox" name="botcheck" tabindex="-1" /></label>
+                </p>
+              </>
+            ) : (
+              <>
+                <input type="hidden" name="form-name" value="devis" />
+                <p class="hp" aria-hidden="true">
+                  <label>Ne pas remplir : <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
+                </p>
+              </>
+            )
+          }
 
           <fieldset class="choice">
             <legend>Type de demande *</legend>

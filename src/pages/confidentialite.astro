@@ -43,8 +43,11 @@ const fil = [
 
         <h2>Destinataires</h2>
         <p>
-          Les données sont destinées exclusivement à {ENTREPRISE.nom}. Elles transitent par notre hébergeur ({ENTREPRISE.hebergeur.nom}),
-          qui assure la réception des formulaires. Elles ne sont jamais vendues ni cédées à des tiers.
+          Les données sont destinées exclusivement à {ENTREPRISE.nom}. Elles transitent par
+          {ENTREPRISE.formulaire.web3formsCle
+            ? ' le service Web3Forms, qui transmet les demandes par e-mail,'
+            : ` notre hébergeur (${ENTREPRISE.hebergeur.nom}), qui assure la réception des formulaires,`}
+          et ne sont jamais vendues ni cédées à des tiers.
         </p>
 
         <h2>Durée de conservation</h2>

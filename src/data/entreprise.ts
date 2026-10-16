@@ -73,6 +73,13 @@ export const ENTREPRISE = {
     mediateur: '[nom et site du médiateur de la consommation]',
   },
 
+  // Formulaire de devis : clé d'accès Web3Forms (gratuite, à créer sur web3forms.com
+  // avec l'adresse qui doit recevoir les demandes). Cette clé peut être publique.
+  // Laisser vide pour utiliser les formulaires Netlify à la place.
+  formulaire: {
+    web3formsCle: '',
+  },
+
   // Codes de vérification fournis par Google Search Console et Bing Webmaster Tools
   // (méthode « balise HTML » : ne copier que la valeur de l'attribut content).
   verification: {

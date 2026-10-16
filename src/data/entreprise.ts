@@ -16,7 +16,7 @@ export const ENTREPRISE = {
 
   telephone: '06 65 95 33 04',
   telephoneLien: '+33665953304',
-  email: '', // À COMPLÉTER (ex. contact@amcf-electricien.fr)
+  email: 'fbonfils@amcf-electricien.fr',
 
   adresse: {
     rue: '', // À COMPLÉTER si vous souhaitez l'afficher (facultatif pour un artisan qui se déplace)

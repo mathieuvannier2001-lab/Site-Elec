@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import { ENTREPRISE, telHref } from '../data/entreprise';
+import { REALISATIONS } from '../lib/photos';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.ordre - b.data.ordre);
 const path = Astro.url.pathname;
@@ -55,6 +56,15 @@ const actif = (prefix: string) => (prefix === '/' ? path === '/' : path.startsWi
             Zones d’intervention
           </a>
         </li>
+        {
+          REALISATIONS.length > 0 && (
+            <li>
+              <a class="nav-link" href="/realisations/" aria-current={actif('/realisations/') ? 'page' : undefined}>
+                Réalisations
+              </a>
+            </li>
+          )
+        }
         <li>
           <a class="nav-link" href="/conseils/" aria-current={actif('/conseils/') ? 'page' : undefined}>Conseils</a>
         </li>
@@ -94,6 +104,7 @@ const actif = (prefix: string) => (prefix === '/' ? path === '/' : path.startsWi
       </ul>
       <ul class="mobile-links">
         <li><a href="/zones-intervention/">Zones d’intervention</a></li>
+        {REALISATIONS.length > 0 && <li><a href="/realisations/">Réalisations</a></li>}
         <li><a href="/conseils/">Conseils</a></li>
         <li><a href="/contact/">Contact & devis</a></li>
       </ul>

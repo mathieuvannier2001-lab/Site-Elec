@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import { ENTREPRISE, telHref } from '../data/entreprise';
+import { REALISATIONS } from '../lib/photos';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.ordre - b.data.ordre);
 const villes = (await getCollection('villes')).sort((a, b) => a.data.nom.localeCompare(b.data.nom, 'fr'));
@@ -28,6 +29,14 @@ const annee = new Date().getFullYear();
           <Icon name="phone" size={20} />
           {ENTREPRISE.telephone}
         </a>
+        {
+          ENTREPRISE.email && (
+            <a class="footer-mail" href={`mailto:${ENTREPRISE.email}`}>
+              <Icon name="mail" size={18} />
+              {ENTREPRISE.email}
+            </a>
+          )
+        }
         <ul class="footer-hours">
           {
             ENTREPRISE.horaires.map((h) => (
@@ -71,6 +80,7 @@ const annee = new Date().getFullYear();
         <p class="footer-title">Informations</p>
         <ul>
           <li><a href="/contact/">Contact & devis gratuit</a></li>
+          {REALISATIONS.length > 0 && <li><a href="/realisations/">Nos réalisations</a></li>}
           <li><a href="/conseils/">Conseils électricité</a></li>
           <li><a href="/mentions-legales/">Mentions légales</a></li>
           <li><a href="/confidentialite/">Politique de confidentialité</a></li>
@@ -146,8 +156,20 @@ const annee = new Date().getFullYear();
     font-stretch: 115%;
     text-decoration: none;
   }
-  .footer-phone :global(svg) {
+  .footer-phone :global(svg),
+  .footer-mail :global(svg) {
     color: var(--red-bright);
+  }
+  .footer-mail {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: -0.5rem 0 1.25rem;
+    color: #fff;
+    text-decoration: none;
+  }
+  .footer-mail:hover {
+    text-decoration: underline;
   }
   .footer-hours {
     display: grid;

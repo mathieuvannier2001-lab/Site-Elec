@@ -7,6 +7,8 @@ import Faq from '../../components/Faq.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import Icon from '../../components/Icon.astro';
 import * as ld from '../../lib/schema';
+import { Picture } from 'astro:assets';
+import { photoService } from '../../lib/photos';
 
 export async function getStaticPaths() {
   const services = await getCollection('services');
@@ -16,6 +18,7 @@ export async function getStaticPaths() {
 const { service } = Astro.props;
 const { Content } = await render(service);
 const d = service.data;
+const photo = photoService(service.id);
 const site = Astro.site!;
 const path = `/services/${service.id}/`;
 
@@ -46,6 +49,18 @@ const schema = [
   <section class="section">
     <div class="container layout">
       <article class="main">
+        {
+          photo && (
+            <Picture
+              src={photo}
+              alt={`${d.nomCourt} – AMCF, électricien à Castries et Montpellier`}
+              formats={['avif', 'webp']}
+              widths={[600, 900, 1300].filter((w) => w <= photo.width)}
+              sizes="(max-width: 960px) 100vw, 780px"
+              class="service-photo"
+            />
+          )
+        }
         <div class="presta card reveal">
           <h2 class="presta-title">Nos prestations</h2>
           <ul class="checklist presta-list">
@@ -136,6 +151,13 @@ const schema = [
     grid-template-columns: minmax(0, 1fr) 360px;
     gap: clamp(2rem, 5vw, 4.5rem);
     align-items: start;
+  }
+  .main :global(.service-photo) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
   }
   .presta {
     margin-bottom: 3rem;

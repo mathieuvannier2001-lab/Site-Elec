@@ -3,6 +3,9 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import Logo from '../components/Logo.astro';
+import Gallery from '../components/Gallery.astro';
+import { Picture } from 'astro:assets';
+import { REALISATIONS, PORTRAIT } from '../lib/photos';
 import PanelIllustration from '../components/PanelIllustration.astro';
 import ZoneMap from '../components/ZoneMap.astro';
 import Faq from '../components/Faq.astro';
@@ -173,8 +176,21 @@ const schema = [
   <!-- ═══════════════ L'ÉLECTRICIEN ═══════════════ -->
   <section class="section artisan" aria-labelledby="artisan-titre">
     <div class="container artisan-grid">
-      <div class="artisan-card reveal">
-        <Logo class="artisan-mono" />
+      <div class:list={['artisan-card reveal', { 'has-photo': PORTRAIT }]}>
+        {
+          PORTRAIT ? (
+            <Picture
+              src={PORTRAIT}
+              alt={`${ENTREPRISE.artisan}, électricien AMCF à Castries`}
+              formats={['avif', 'webp']}
+              widths={[400, 700, 1000].filter((w) => w <= PORTRAIT.width)}
+              sizes="(max-width: 900px) 100vw, 480px"
+              class="artisan-photo"
+            />
+          ) : (
+            <Logo class="artisan-mono" />
+          )
+        }
         <p class="artisan-name">{ENTREPRISE.artisan}</p>
         <p class="artisan-role">Électricien · fondateur d’AMCF</p>
         <p class="artisan-place"><Icon name="pin" size={16} /> Castries, Hérault</p>
@@ -210,6 +226,26 @@ const schema = [
       </div>
     </div>
   </section>
+
+  <!-- ═══════════════ RÉALISATIONS (si des photos existent) ═══════════════ -->
+  {
+    REALISATIONS.length > 0 && (
+      <section class="section section--paper" aria-labelledby="realisations-titre">
+        <div class="container">
+          <div class="conseils-head reveal">
+            <div>
+              <p class="eyebrow">Réalisations</p>
+              <h2 id="realisations-titre">Nos derniers chantiers</h2>
+            </div>
+            <a class="link-arrow" href="/realisations/">
+              Toutes les réalisations <Icon name="arrow" size={18} />
+            </a>
+          </div>
+          <Gallery photos={REALISATIONS.slice(0, 6)} />
+        </div>
+      </section>
+    )
+  }
 
   <!-- ═══════════════ URGENCE ═══════════════ -->
   <section class="section" aria-labelledby="urgence-titre">
@@ -648,6 +684,21 @@ const schema = [
     opacity: 0.9;
     transform: translateX(-50%);
     filter: drop-shadow(0 20px 40px rgba(210, 46, 36, 0.35));
+  }
+  .artisan-card :global(.artisan-photo) {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .artisan-card.has-photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(transparent 45%, rgba(12, 13, 16, 0.92));
   }
   .artisan-name {
     margin: 0;

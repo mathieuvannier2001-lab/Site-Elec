@@ -1,0 +1,47 @@
+---
+/**
+ * Page « Nos réalisations ». Elle n'est générée que s'il y a au moins une photo
+ * dans src/assets/realisations/ (pas de page vide pour Google).
+ */
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Gallery from '../../components/Gallery.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { REALISATIONS } from '../../lib/photos';
+import * as ld from '../../lib/schema';
+
+export function getStaticPaths() {
+  return REALISATIONS.length ? [{ params: { page: undefined } }] : [];
+}
+
+const site = Astro.site!;
+const path = '/realisations/';
+const titre = 'Nos réalisations – Électricien Castries & Montpellier | AMCF';
+const description =
+  'Photos de chantiers réalisés par AMCF : tableaux électriques, rénovations, automatismes, éclairage et courant faible à Castries, Montpellier et alentours.';
+const fil = [
+  { nom: 'Accueil', path: '/' },
+  { nom: 'Réalisations', path },
+];
+const schema = [
+  ld.entreprise(site),
+  ld.pageWeb(site, { path, titre, description, type: 'CollectionPage', avecFilAriane: true }),
+  ld.filAriane(site, path, fil),
+];
+---
+
+<Base titre={titre} description={description} schema={schema}>
+  <PageHero
+    eyebrow="Réalisations"
+    titre="Nos chantiers en images"
+    lead="Tableaux électriques, rénovations, automatismes, éclairage : quelques interventions réalisées à Castries, Montpellier et dans les communes voisines."
+    fil={fil}
+    icone="camera"
+  />
+  <section class="section">
+    <div class="container">
+      <Gallery photos={REALISATIONS} />
+    </div>
+  </section>
+  <CtaBand />
+</Base>

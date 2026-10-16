@@ -49,4 +49,19 @@ const conseils = defineCollection({
   }),
 });
 
-export const collections = { services, villes, conseils };
+/** Pages « service + ville » : src/content/localisees/<service>--<ville>.md → /services/<service>/<ville>/ */
+const localisees = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/localisees' }),
+  schema: z.object({
+    service: z.string(),
+    ville: z.string(),
+    titre: z.string(),
+    titreSeo: z.string().max(65),
+    description: z.string().max(160),
+    accroche: z.string(),
+    quartiers: z.array(z.string()).default([]),
+    faq,
+  }),
+});
+
+export const collections = { services, villes, conseils, localisees };

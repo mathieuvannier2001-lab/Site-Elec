@@ -28,6 +28,7 @@ const estCastries = ville.id === 'castries';
 const services = (await getCollection('services')).sort((a, b) => a.data.ordre - b.data.ordre);
 const pagesVilles = new Set((await getCollection('villes')).map((v) => v.id));
 const voisines = communesVoisines(ville.id, 8);
+const localisees = new Set((await getCollection('localisees')).map((l) => `${l.data.service}/${l.data.ville}`));
 
 const faq = [
   ...d.faq,
@@ -85,7 +86,7 @@ const schema = [
           {
             services.map((s) => (
               <li>
-                <a href={`/services/${s.id}/`}>
+                <a href={localisees.has(`${s.id}/${ville.id}`) ? `/services/${s.id}/${ville.id}/` : `/services/${s.id}/`}>
                   <span class="svc-icon">
                     <Icon name={s.data.icone} size={20} />
                   </span>

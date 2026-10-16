@@ -30,6 +30,9 @@ const autres = (await getCollection('services'))
   .sort((a, b) => a.data.ordre - b.data.ordre);
 const villes = (await getCollection('villes')).sort((a, b) => a.data.nom.localeCompare(b.data.nom, 'fr'));
 const articles = (await getCollection('conseils')).filter((c) => c.data.servicesLies.includes(service.id));
+const villesDediees = new Set(
+  (await getCollection('localisees')).filter((l) => l.data.service === service.id).map((l) => l.data.ville),
+);
 
 const fil = [
   { nom: 'Accueil', path: '/' },
@@ -124,9 +127,15 @@ const schema = [
         {
           villes.map((v) => (
             <li>
-              <a class="chip" href={`/electricien-${v.id}/`}>
-                <Icon name="pin" size={15} /> Électricien {v.data.nom}
-              </a>
+              {villesDediees.has(v.id) ? (
+                <a class="chip chip--strong" href={`/services/${service.id}/${v.id}/`}>
+                  <Icon name="pin" size={15} /> {d.nomCourt} à {v.data.nom}
+                </a>
+              ) : (
+                <a class="chip" href={`/electricien-${v.id}/`}>
+                  <Icon name="pin" size={15} /> Électricien {v.data.nom}
+                </a>
+              )}
             </li>
           ))
         }

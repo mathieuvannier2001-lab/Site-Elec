@@ -1,0 +1,212 @@
+---
+/** Page « service + ville » (ex. /services/depannage-electrique/montpellier/). */
+import { getCollection, getEntry, render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import AsideCall from '../../../components/AsideCall.astro';
+import Faq from '../../../components/Faq.astro';
+import CtaBand from '../../../components/CtaBand.astro';
+import Icon from '../../../components/Icon.astro';
+import * as ld from '../../../lib/schema';
+import { Picture } from 'astro:assets';
+import { photoService } from '../../../lib/photos';
+import { communeParSlug, trajetDepuisCastries } from '../../../data/communes';
+
+export async function getStaticPaths() {
+  const pages = await getCollection('localisees');
+  return pages.map((page) => ({ params: { slug: page.data.service, ville: page.data.ville }, props: { page } }));
+}
+
+const { page } = Astro.props;
+const d = page.data;
+const { Content } = await render(page);
+
+const service = await getEntry('services', d.service);
+const ville = await getEntry('villes', d.ville);
+const commune = communeParSlug(d.ville);
+if (!service || !ville || !commune) throw new Error(`Page localisée « ${page.id} » : service ou ville introuvable`);
+const s = service.data;
+const nomVille = ville.data.nom;
+const trajet = trajetDepuisCastries(commune);
+const photo = photoService(service.id);
+
+const site = Astro.site!;
+const path = `/services/${service.id}/${d.ville}/`;
+const articles = (await getCollection('conseils')).filter((c) => c.data.servicesLies.includes(service.id));
+const autres = (await getCollection('localisees')).filter((l) => l.data.ville === d.ville && l.id !== page.id);
+const nomsServices = new Map((await getCollection('services')).map((x) => [x.id, x.data.nomCourt]));
+
+const fil = [
+  { nom: 'Accueil', path: '/' },
+  { nom: 'Services', path: '/services/' },
+  { nom: s.nomCourt, path: `/services/${service.id}/` },
+  { nom: nomVille, path },
+];
+
+const schema = [
+  ld.entreprise(site),
+  ld.pageWeb(site, { path, titre: d.titreSeo, description: d.description, avecFilAriane: true }),
+  ld.filAriane(site, path, fil),
+  ld.service(site, { path, nom: d.titre, description: d.description, categorie: s.categorie, zone: nomVille }),
+  ld.faq(site, path, d.faq),
+];
+---
+
+<Base titre={d.titreSeo} description={d.description} schema={schema}>
+  <PageHero eyebrow={`${s.nomCourt} · ${nomVille}`} titre={d.titre} lead={d.accroche} fil={fil} icone={s.icone}>
+    <ul class="facts">
+      <li><Icon name="route" size={18} /> ≈ {trajet.km} km de Castries</li>
+      <li><Icon name="clock" size={18} /> 7j/7 sur demande</li>
+      <li><Icon name="file" size={18} /> Devis gratuit</li>
+    </ul>
+  </PageHero>
+
+  <section class="section">
+    <div class="container layout">
+      <article class="main">
+        {
+          photo && (
+            <Picture
+              src={photo}
+              alt={`${s.nomCourt} à ${nomVille} – AMCF, électricien`}
+              formats={['avif', 'webp']}
+              widths={[600, 900, 1300].filter((w) => w <= photo.width)}
+              sizes="(max-width: 960px) 100vw, 780px"
+              class="service-photo"
+            />
+          )
+        }
+        <div class="prose">
+          <Content />
+        </div>
+
+        {
+          d.quartiers.length > 0 && (
+            <div class="bloc">
+              <h2>Les quartiers où nous intervenons</h2>
+              <ul class="chips">
+                {d.quartiers.map((q) => (
+                  <li class="chip">{q}</li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+
+        <div class="liens card">
+          <p class="liens-titre">Pour aller plus loin</p>
+          <ul>
+            <li>
+              <a class="link-arrow" href={`/services/${service.id}/`}>{s.nomCourt} : le service en détail <Icon name="arrow" size={16} /></a>
+            </li>
+            <li>
+              <a class="link-arrow" href={`/electricien-${d.ville}/`}>Électricien à {nomVille} <Icon name="arrow" size={16} /></a>
+            </li>
+            <li>
+              <a class="link-arrow" href="/tarifs/">Nos tarifs <Icon name="arrow" size={16} /></a>
+            </li>
+            {
+              autres.map((a) => (
+                <li>
+                  <a class="link-arrow" href={`/services/${a.data.service}/${a.data.ville}/`}>
+                    {nomsServices.get(a.data.service)} à {nomVille} <Icon name="arrow" size={16} />
+                  </a>
+                </li>
+              ))
+            }
+            {
+              articles.map((a) => (
+                <li>
+                  <a class="link-arrow" href={`/conseils/${a.id}/`}>{a.data.titre} <Icon name="arrow" size={16} /></a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </article>
+
+      <aside class="aside">
+        <div class="aside-sticky">
+          <AsideCall titre={`${s.nomCourt} à ${nomVille} ?`} />
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <Faq items={d.faq} titre={`${s.nomCourt} à ${nomVille} : vos questions`} />
+
+  <CtaBand titre={`${s.nomCourt} à ${nomVille} : appelez-nous`} />
+</Base>
+
+<style>
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .facts li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .facts :global(svg) {
+    color: var(--red-bright);
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+  .main {
+    display: grid;
+    gap: 2.5rem;
+    min-width: 0;
+  }
+  .main :global(.service-photo) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+  }
+  .bloc {
+    display: grid;
+    gap: 1rem;
+  }
+  .bloc h2 {
+    margin: 0;
+  }
+  .chips {
+    margin: 0;
+  }
+  .liens {
+    background: var(--paper);
+    border-color: transparent;
+  }
+  .liens-titre {
+    margin: 0 0 0.75rem;
+    font-weight: 760;
+    font-stretch: 108%;
+  }
+  .liens ul {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .aside-sticky {
+    position: sticky;
+    top: calc(var(--header-h) + 1.5rem);
+  }
+  @media (max-width: 960px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

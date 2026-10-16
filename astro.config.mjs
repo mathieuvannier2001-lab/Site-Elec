@@ -3,11 +3,8 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 // Adresse publique du site, utilisée pour les URL canoniques, le sitemap et les
-// balises Open Graph. Ordre de priorité :
-//   1. SITE_URL (à définir quand le nom de domaine sera acheté, ex. https://www.amcf-electricite.fr)
-//   2. URL, fournie automatiquement par Netlify au moment du déploiement
-//   3. une valeur par défaut pour le développement local
-const SITE = process.env.SITE_URL || process.env.URL || 'https://amcf-electricite.netlify.app';
+// balises Open Graph. La variable d'environnement SITE_URL permet de la remplacer.
+const SITE = process.env.SITE_URL || 'https://www.amcf-electricien.fr';
 
 export default defineConfig({
   site: SITE,

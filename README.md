@@ -35,7 +35,7 @@ Node.js 22 ou plus récent est nécessaire.
 
 1. Sur [netlify.com](https://www.netlify.com), « Add new site » → « Import an existing project » → GitHub → ce dépôt. Les réglages sont lus dans `netlify.toml`.
 2. Dans **Site configuration → Forms**, activer la détection des formulaires (« Enable form detection ») pour recevoir les demandes de devis, puis ajouter une notification par e-mail.
-3. Une fois le nom de domaine acheté : **Domain management → Add a domain**, puis définir la variable d'environnement `SITE_URL` (ex. `https://www.amcf-electricite.fr`) et relancer un déploiement.
+3. Relier le nom de domaine `amcf-electricien.fr` (adresse principale : `https://www.amcf-electricien.fr`, définie dans `astro.config.mjs`).
 
 ## Référencement : ce qui est en place
 

@@ -16,7 +16,7 @@ export const ENTREPRISE = {
 
   telephone: '06 65 95 33 04',
   telephoneLien: '+33665953304',
-  email: '', // À COMPLÉTER (ex. contact@amcf-electricite.fr)
+  email: '', // À COMPLÉTER (ex. contact@amcf-electricien.fr)
 
   adresse: {
     rue: '', // À COMPLÉTER si vous souhaitez l'afficher (facultatif pour un artisan qui se déplace)
@@ -41,6 +41,8 @@ export const ENTREPRISE = {
 
   // Qualifications et garanties affichées sur le site et transmises à Google.
   certifications: [
+    { nom: 'Qualifelec', detail: 'Qualification professionnelle' },
+    { nom: 'Label RGE', detail: 'Reconnu Garant de l’Environnement' },
     { nom: 'Qualification IRVE', detail: 'Installation de bornes de recharge' },
     { nom: 'Assurance décennale', detail: 'Travaux garantis 10 ans' },
     { nom: 'Habilitations électriques', detail: 'Interventions en sécurité' },
@@ -61,7 +63,7 @@ export const ENTREPRISE = {
   // Mentions légales — À COMPLÉTER avant la mise en ligne.
   legal: {
     formeJuridique: '[forme juridique – ex. EI, EURL, SASU]',
-    dirigeant: 'Fabien [NOM À COMPLÉTER]',
+    dirigeant: 'Fabien Bonfils',
     siret: '[numéro SIRET]',
     rcsOuRm: '[immatriculation RCS ou RNE]',
     tva: '[numéro de TVA intracommunautaire]',

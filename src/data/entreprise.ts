@@ -77,7 +77,7 @@ export const ENTREPRISE = {
   // avec l'adresse qui doit recevoir les demandes). Cette clé peut être publique.
   // Laisser vide pour utiliser les formulaires Netlify à la place.
   formulaire: {
-    web3formsCle: '',
+    web3formsCle: 'f72a7ece-a96a-4d6c-80f2-6acf29eaf463',
   },
 
   // Codes de vérification fournis par Google Search Console et Bing Webmaster Tools

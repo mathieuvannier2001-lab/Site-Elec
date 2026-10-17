@@ -31,7 +31,7 @@ export function entreprise(site: URL, services: { nom: string; url: string }[] =
     url: abs(site, '/'),
     telephone: ENTREPRISE.telephoneLien,
     ...(ENTREPRISE.email ? { email: ENTREPRISE.email } : {}),
-    logo: abs(site, '/logo-amcf.png'),
+    logo: abs(site, '/logo-carre.png'),
     image: abs(site, '/og/amcf-electricien-castries.png'),
     priceRange: '€€',
     currenciesAccepted: 'EUR',
@@ -102,7 +102,8 @@ export function siteWeb(site: URL): Json {
     '@type': 'WebSite',
     '@id': idSite(site),
     url: abs(site, '/'),
-    name: `${ENTREPRISE.nom} – Électricien à Castries et Montpellier`,
+    name: ENTREPRISE.nom,
+    alternateName: ['AMCF Électricien', 'amcf-electricien.fr'],
     inLanguage: 'fr-FR',
     publisher: { '@id': idEntreprise(site) },
   };

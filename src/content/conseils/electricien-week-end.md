@@ -58,6 +58,6 @@ Les interventions le **week-end**, la **nuit** ou les **jours fériés** font g�
 
 ## Un électricien à Castries et Montpellier le week-end
 
-AMCF intervient **du lundi au vendredi de 7 h 30 à 19 h**, et **le samedi et le dimanche sur demande** pour les dépannages. Basés à Castries, nous intervenons rapidement à Montpellier et dans les communes alentour.
+AMCF intervient **du lundi au vendredi de 7 h à 18 h**, et **le samedi et le dimanche sur demande** pour les dépannages. Basés à Castries, nous intervenons rapidement à Montpellier et dans les communes alentour.
 
 Appelez-nous en décrivant la situation : nous vous disons franchement si une intervention immédiate est nécessaire, et nous vous annonçons le prix avant de nous déplacer. En savoir plus sur notre service de [dépannage électrique](/services/depannage-electrique/).

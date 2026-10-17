@@ -30,12 +30,12 @@ export const ENTREPRISE = {
 
   // Horaires affichés sur le site et transmis à Google.
   horaires: [
-    { jours: 'Lundi – Vendredi', heures: '7 h 30 – 19 h 00' },
+    { jours: 'Lundi – Vendredi', heures: '7 h 00 – 18 h 00' },
     { jours: 'Samedi – Dimanche', heures: 'Dépannage sur demande' },
   ],
   horairesSchema: [
-    { days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '07:30', closes: '19:00' },
-    { days: ['Saturday', 'Sunday'], opens: '08:00', closes: '19:00' },
+    // Le week-end, dépannage sur demande uniquement : pas d'horaires d'ouverture déclarés à Google.
+    { days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '07:00', closes: '18:00' },
   ],
   disponibilite: 'Disponible 7j/7 · dépannage sur demande',
 

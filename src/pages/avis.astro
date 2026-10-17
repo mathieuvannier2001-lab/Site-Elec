@@ -1,0 +1,387 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import AsideCall from '../components/AsideCall.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Icon from '../components/Icon.astro';
+import * as ld from '../lib/schema';
+import { AVIS, AVIS_GOOGLE } from '../data/avis';
+
+const site = Astro.site!;
+const path = '/avis/';
+const titre = 'Avis clients – AMCF, électricien à Castries et Montpellier';
+const description =
+  'Les avis des clients d’AMCF, électricien à Castries et Montpellier. Laissez votre avis sur Google en une minute, depuis votre téléphone ou votre ordinateur.';
+const fil = [
+  { nom: 'Accueil', path: '/' },
+  { nom: 'Avis clients', path },
+];
+
+const fmt = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
+const noteFr = (n: number) => n.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+const etapes = [
+  { titre: 'Ouvrez le formulaire', texte: 'Touchez le bouton ci-dessous. Sur ordinateur, vous pouvez aussi scanner le QR code avec votre téléphone.' },
+  { titre: 'Choisissez une note', texte: 'De une à cinq étoiles, selon votre expérience.' },
+  { titre: 'Ajoutez quelques mots', texte: 'Par exemple l’intervention réalisée et votre commune. C’est utile aux futurs clients.' },
+];
+
+const faq = [
+  {
+    q: 'Faut-il un compte Google pour laisser un avis ?',
+    r: 'Oui, Google demande d’être connecté à un compte Google, par exemple une adresse Gmail. Sur un téléphone Android, vous l’êtes en général déjà.',
+  },
+  {
+    q: 'Puis-je modifier ou supprimer mon avis ?',
+    r: 'Oui, à tout moment, depuis Google Maps : ouvrez votre profil, puis la rubrique « Contributions » ou « Avis ».',
+  },
+  {
+    q: 'Les avis affichés sur cette page sont-ils authentiques ?',
+    r: 'Oui. Ils sont recopiés tels quels depuis notre fiche Google, où chacun peut les consulter. Nous ne sélectionnons pas les avis et n’offrons aucune contrepartie en échange.',
+  },
+];
+
+const schema = [
+  ld.entreprise(site),
+  ld.pageWeb(site, { path, titre, description, avecFilAriane: true }),
+  ld.filAriane(site, path, fil),
+  ld.faq(site, path, faq),
+];
+---
+
+<Base titre={titre} description={description} schema={schema}>
+  <PageHero
+    eyebrow="Avis clients"
+    titre="Votre avis compte"
+    lead="Merci pour votre confiance ! Un avis sur Google prend une minute et aide les habitants du secteur à trouver un électricien sérieux."
+    fil={fil}
+    icone="sparkles"
+    ctas={false}
+  />
+
+  <section class="section">
+    <div class="container layout">
+      <article class="main">
+        <section class="laisser" aria-labelledby="laisser-titre">
+          <div class="laisser-txt">
+            <h2 id="laisser-titre">Laisser un avis en une minute</h2>
+            <ol class="etapes">
+              {
+                etapes.map((e, i) => (
+                  <li>
+                    <span class="etape-num">{i + 1}</span>
+                    <span>
+                      <strong>{e.titre}</strong>
+                      <span class="etape-txt">{e.texte}</span>
+                    </span>
+                  </li>
+                ))
+              }
+            </ol>
+            <a class="btn btn--red btn--lg" href={AVIS_GOOGLE.lienAvis} target="_blank" rel="noopener">
+              <Icon name="sparkles" size={20} /> Laisser un avis sur Google
+            </a>
+          </div>
+          <figure class="qr">
+            <img src="/qr-avis-google.svg" width="180" height="180" alt="QR code vers le formulaire d’avis Google d’AMCF" />
+            <figcaption>Sur ordinateur ? Scannez ce code avec votre téléphone.</figcaption>
+          </figure>
+        </section>
+
+        <section class="lire" aria-labelledby="lire-titre">
+          <div class="lire-head">
+            <h2 id="lire-titre">Ce que disent nos clients</h2>
+            {
+              AVIS_GOOGLE.note !== null && AVIS_GOOGLE.total !== null && (
+                <p class="resume">
+                  <span class="resume-note">{noteFr(AVIS_GOOGLE.note)}</span>
+                  <span class="etoiles" aria-hidden="true">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <span class={n <= Math.round(AVIS_GOOGLE.note!) ? 'on' : ''}>★</span>
+                    ))}
+                  </span>
+                  <span class="resume-total">
+                    {AVIS_GOOGLE.total} avis sur Google
+                  </span>
+                </p>
+              )
+            }
+          </div>
+
+          {
+            AVIS.length > 0 ? (
+              <ul class="avis-liste">
+                {AVIS.map((a) => (
+                  <li class="avis">
+                    <div class="avis-head">
+                      <span class="avis-initiale" aria-hidden="true">
+                        {a.auteur.charAt(0)}
+                      </span>
+                      <span>
+                        <strong>{a.auteur}</strong>
+                        <time datetime={a.date}>{fmt.format(new Date(a.date))}</time>
+                      </span>
+                      <span class="etoiles" role="img" aria-label={`Note : ${a.note} sur 5`}>
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <span class={n <= a.note ? 'on' : ''} aria-hidden="true">
+                            ★
+                          </span>
+                        ))}
+                      </span>
+                    </div>
+                    <p class="avis-texte">{a.texte}</p>
+                    {a.reponse && (
+                      <p class="avis-reponse">
+                        <strong>Réponse de Fabien :</strong> {a.reponse}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div class="vide">
+                <p class="vide-titre">Les premiers avis arrivent</p>
+                <p>
+                  Notre fiche Google vient d’ouvrir. Si nous sommes déjà intervenus chez vous, votre avis sera parmi les
+                  premiers : merci d’avance !
+                </p>
+              </div>
+            )
+          }
+
+          {
+            AVIS_GOOGLE.lienFiche && (
+              <a class="link-arrow" href={AVIS_GOOGLE.lienFiche} target="_blank" rel="noopener">
+                Voir tous les avis sur Google <Icon name="arrow" size={16} />
+              </a>
+            )
+          }
+        </section>
+      </article>
+
+      <aside class="aside">
+        <div class="aside-sticky">
+          <AsideCall />
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <Faq items={faq} titre="Avis : vos questions" />
+
+  <CtaBand />
+</Base>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+  .main {
+    display: grid;
+    gap: 3.5rem;
+    min-width: 0;
+  }
+  .laisser {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2rem;
+    align-items: center;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border-radius: var(--radius-lg);
+    background: var(--paper);
+  }
+  .laisser-txt {
+    display: grid;
+    gap: 1.5rem;
+    min-width: 0;
+  }
+  .laisser h2,
+  .lire h2 {
+    margin: 0;
+  }
+  .laisser .btn {
+    justify-self: start;
+  }
+  .etapes {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .etapes li {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr;
+    gap: 0.9rem;
+    align-items: start;
+  }
+  .etape-num {
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+    font-weight: 800;
+  }
+  .etapes strong {
+    display: block;
+  }
+  .etape-txt {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .qr {
+    display: grid;
+    gap: 0.6rem;
+    justify-items: center;
+    width: 200px;
+    margin: 0;
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    background: #fff;
+    text-align: center;
+  }
+  .qr img {
+    width: 180px;
+    height: 180px;
+  }
+  .qr figcaption {
+    color: var(--muted);
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+  .lire {
+    display: grid;
+    gap: 1.5rem;
+  }
+  .lire-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+  }
+  .resume {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+  }
+  .resume-note {
+    font-size: 1.6rem;
+    font-weight: 800;
+    font-stretch: 112%;
+  }
+  .resume-total {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .etoiles {
+    display: inline-flex;
+    gap: 0.1rem;
+    color: var(--line);
+    font-size: 1.05rem;
+    letter-spacing: 0;
+  }
+  .etoiles .on {
+    color: #f4b400;
+  }
+  .avis-liste {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .avis {
+    display: grid;
+    gap: 0.85rem;
+    align-content: start;
+    padding: 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .avis-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .avis-head strong {
+    display: block;
+    line-height: 1.2;
+  }
+  .avis-head time {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .avis-initiale {
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    background: var(--paper);
+    font-weight: 800;
+  }
+  .avis-texte {
+    margin: 0;
+    line-height: 1.6;
+  }
+  .avis-reponse {
+    margin: 0;
+    padding: 0.75rem 0.9rem;
+    border-left: 3px solid var(--red);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    background: var(--paper);
+    font-size: 0.92rem;
+  }
+  .vide {
+    padding: 1.5rem;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .vide p {
+    margin: 0;
+    color: var(--muted);
+  }
+  .vide .vide-titre {
+    margin-bottom: 0.35rem;
+    color: var(--text);
+    font-weight: 700;
+  }
+  .lire .link-arrow {
+    justify-self: start;
+  }
+  .aside-sticky {
+    position: sticky;
+    top: calc(var(--header-h) + 1.5rem);
+  }
+  @media (max-width: 960px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 680px) {
+    .laisser {
+      grid-template-columns: 1fr;
+    }
+    .qr {
+      display: none;
+    }
+    .laisser .btn {
+      justify-self: stretch;
+      justify-content: center;
+    }
+    .avis-liste {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

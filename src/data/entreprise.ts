@@ -42,7 +42,6 @@ export const ENTREPRISE = {
   // Qualifications et garanties affichées sur le site et transmises à Google.
   certifications: [
     { nom: 'Qualifelec', detail: 'Qualification professionnelle' },
-    { nom: 'Label RGE', detail: 'Reconnu Garant de l’Environnement' },
     { nom: 'Qualification IRVE', detail: 'Installation de bornes de recharge' },
     { nom: 'Assurance décennale', detail: 'Travaux garantis 10 ans' },
     { nom: 'Habilitations électriques', detail: 'Interventions en sécurité' },

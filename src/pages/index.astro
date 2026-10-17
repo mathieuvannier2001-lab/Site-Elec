@@ -824,6 +824,10 @@ const schema = [
     border: 1px solid var(--line);
     border-radius: var(--radius);
   }
+  /* Nombre impair de qualifications : la dernière prend toute la largeur. */
+  .certifs li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
   .certifs strong {
     display: block;
     line-height: 1.25;

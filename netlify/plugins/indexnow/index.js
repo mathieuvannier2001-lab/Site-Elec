@@ -20,20 +20,20 @@ const FICHIER_EMPREINTES = join(DOSSIER_CACHE, 'empreintes.json');
 let aEnvoyer = [];
 
 /** Liste les URL de tous les sitemaps (sitemap-0.xml, sitemap-1.xml…). */
-export function urlsDuSitemap(dossierPublie) {
+function urlsDuSitemap(dossierPublie) {
   return readdirSync(dossierPublie)
     .filter((f) => /^sitemap-\d+\.xml$/.test(f))
     .flatMap((f) => [...readFileSync(join(dossierPublie, f), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]));
 }
 
 /** Fichier HTML correspondant à une URL (format « dossier/index.html »). */
-export function fichierDeUrl(dossierPublie, url) {
+function fichierDeUrl(dossierPublie, url) {
   const chemin = decodeURI(new URL(url).pathname);
   return join(dossierPublie, chemin, 'index.html');
 }
 
 /** Compare les empreintes actuelles aux précédentes et renvoie les URL changées. */
-export function calculerChangements(dossierPublie, anciennes) {
+function calculerChangements(dossierPublie, anciennes) {
   const nouvelles = {};
   const changees = [];
   for (const url of urlsDuSitemap(dossierPublie)) {

@@ -78,3 +78,7 @@ export function communesVoisines(slug: string, n = 6) {
     .sort((a, b) => a.d - b.d)
     .slice(0, n);
 }
+
+/** Préposition correcte devant un nom de commune : « à Castries », « au Crès », « aux Matelles ». */
+export const aVille = (nom: string) =>
+  nom.startsWith('Le ') ? `au ${nom.slice(3)}` : nom.startsWith('Les ') ? `aux ${nom.slice(4)}` : `à ${nom}`;

@@ -6,7 +6,7 @@ import AsideCall from '../components/AsideCall.astro';
 import Faq from '../components/Faq.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Icon from '../components/Icon.astro';
-import { communeParSlug, communesVoisines, trajetDepuisCastries } from '../data/communes';
+import { aVille, communeParSlug, communesVoisines, trajetDepuisCastries } from '../data/communes';
 import * as ld from '../lib/schema';
 
 export async function getStaticPaths() {
@@ -38,7 +38,7 @@ const faq = [
         r: 'Nous sommes joignables du lundi au vendredi de 7 h 30 à 19 h, et les dépannages du samedi et du dimanche sont assurés sur demande. Appelez le 06 65 95 33 04.',
       }
     : {
-        q: `Combien de temps pour venir à ${d.nom} ?`,
+        q: `Combien de temps pour venir ${aVille(d.nom)} ?`,
         r: `${d.nom} se trouve à environ ${trajet.km} km de notre base de Castries, soit environ ${trajet.minutes} minutes de trajet hors heures de pointe. Pour un dépannage, nous fixons ensemble le créneau le plus rapide lors de votre appel.`,
       },
 ];
@@ -46,7 +46,7 @@ const faq = [
 const fil = [
   { nom: 'Accueil', path: '/' },
   { nom: 'Zones d’intervention', path: '/zones-intervention/' },
-  { nom: `Électricien à ${d.nom}`, path },
+  { nom: `Électricien ${aVille(d.nom)}`, path },
 ];
 
 const schema = [
@@ -55,7 +55,7 @@ const schema = [
   ld.filAriane(site, path, fil),
   ld.service(site, {
     path,
-    nom: `Électricien à ${d.nom}`,
+    nom: `Électricien ${aVille(d.nom)}`,
     description: d.description,
     categorie: 'Électricité générale',
     zone: d.nom,
@@ -65,7 +65,7 @@ const schema = [
 ---
 
 <Base titre={d.titreSeo} description={d.description} schema={schema}>
-  <PageHero eyebrow={`${d.nom} · ${commune.cp}`} titre={`Électricien à ${d.nom}`} lead={d.accroche} fil={fil} icone="pin">
+  <PageHero eyebrow={`${d.nom} · ${commune.cp}`} titre={`Électricien ${aVille(d.nom)}`} lead={d.accroche} fil={fil} icone="pin">
     <ul class="facts">
       <li>
         <Icon name="route" size={18} />
@@ -81,7 +81,7 @@ const schema = [
       <article class="prose">
         <Content />
 
-        <h2>Nos services à {d.nom}</h2>
+        <h2>Nos services {aVille(d.nom)}</h2>
         <ul class="svc-list">
           {
             services.map((s) => (
@@ -92,7 +92,7 @@ const schema = [
                   </span>
                   <span>
                     <strong>
-                      {s.data.nomCourt} à {d.nom}
+                      {s.data.nomCourt} {aVille(d.nom)}
                     </strong>
                     <small>{s.data.categorie}</small>
                   </span>
@@ -105,7 +105,7 @@ const schema = [
         {
           d.secteurs.length > 0 && (
             <>
-              <h2>Secteurs desservis à {d.nom}</h2>
+              <h2>Secteurs desservis {aVille(d.nom)}</h2>
               <ul class="chips not-prose">
                 {d.secteurs.map((s) => (
                   <li class="chip">{s}</li>
@@ -118,13 +118,13 @@ const schema = [
 
       <aside class="aside">
         <div class="aside-sticky">
-          <AsideCall titre={`Un électricien à ${d.nom} ?`} />
+          <AsideCall titre={`Un électricien ${aVille(d.nom)} ?`} />
         </div>
       </aside>
     </div>
   </section>
 
-  <Faq items={faq} titre={`Électricien à ${d.nom} : vos questions`} />
+  <Faq items={faq} titre={`Électricien ${aVille(d.nom)} : vos questions`} />
 
   <section class="section section--tight" aria-labelledby="voisines-titre">
     <div class="container">
@@ -155,7 +155,7 @@ const schema = [
     </div>
   </section>
 
-  <CtaBand titre={`Besoin d’un électricien à ${d.nom} ?`} />
+  <CtaBand titre={`Besoin d’un électricien ${aVille(d.nom)} ?`} />
 </Base>
 
 <style>

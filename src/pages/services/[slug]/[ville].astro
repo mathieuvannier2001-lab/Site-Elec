@@ -10,7 +10,7 @@ import Icon from '../../../components/Icon.astro';
 import * as ld from '../../../lib/schema';
 import { Picture } from 'astro:assets';
 import { photoService } from '../../../lib/photos';
-import { communeParSlug, trajetDepuisCastries } from '../../../data/communes';
+import { aVille, communeParSlug, trajetDepuisCastries } from '../../../data/communes';
 
 export async function getStaticPaths() {
   const pages = await getCollection('localisees');
@@ -68,7 +68,7 @@ const schema = [
           photo && (
             <Picture
               src={photo}
-              alt={`${s.nomCourt} à ${nomVille} – AMCF, électricien`}
+              alt={`${s.nomCourt} ${aVille(nomVille)} – AMCF, électricien`}
               formats={['avif', 'webp']}
               widths={[600, 900, 1300].filter((w) => w <= photo.width)}
               sizes="(max-width: 960px) 100vw, 780px"
@@ -100,7 +100,7 @@ const schema = [
               <a class="link-arrow" href={`/services/${service.id}/`}>{s.nomCourt} : le service en détail <Icon name="arrow" size={16} /></a>
             </li>
             <li>
-              <a class="link-arrow" href={`/electricien-${d.ville}/`}>Électricien à {nomVille} <Icon name="arrow" size={16} /></a>
+              <a class="link-arrow" href={`/electricien-${d.ville}/`}>Électricien {aVille(nomVille)} <Icon name="arrow" size={16} /></a>
             </li>
             <li>
               <a class="link-arrow" href="/tarifs/">Nos tarifs <Icon name="arrow" size={16} /></a>
@@ -109,7 +109,7 @@ const schema = [
               autres.map((a) => (
                 <li>
                   <a class="link-arrow" href={`/services/${a.data.service}/${a.data.ville}/`}>
-                    {nomsServices.get(a.data.service)} à {nomVille} <Icon name="arrow" size={16} />
+                    {nomsServices.get(a.data.service)} {aVille(nomVille)} <Icon name="arrow" size={16} />
                   </a>
                 </li>
               ))
@@ -127,15 +127,15 @@ const schema = [
 
       <aside class="aside">
         <div class="aside-sticky">
-          <AsideCall titre={`${s.nomCourt} à ${nomVille} ?`} />
+          <AsideCall titre={`${s.nomCourt} ${aVille(nomVille)} ?`} />
         </div>
       </aside>
     </div>
   </section>
 
-  <Faq items={d.faq} titre={`${s.nomCourt} à ${nomVille} : vos questions`} />
+  <Faq items={d.faq} titre={`${s.nomCourt} ${aVille(nomVille)} : vos questions`} />
 
-  <CtaBand titre={`${s.nomCourt} à ${nomVille} : appelez-nous`} />
+  <CtaBand titre={`${s.nomCourt} ${aVille(nomVille)} : appelez-nous`} />
 </Base>
 
 <style>

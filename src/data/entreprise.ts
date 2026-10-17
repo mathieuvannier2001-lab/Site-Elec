@@ -54,11 +54,14 @@ export const ENTREPRISE = {
 
   // Liens vers les profils publics (fiche Google, Facebook, Instagram…). Laisser vide si inexistant.
   reseaux: {
-    google: '', // À COMPLÉTER : lien de la fiche Google Business Profile
+    google: 'https://share.google/pJsYoSFFGID4gBqY2', // fiche Google Business Profile
     facebook: '',
     instagram: '',
     linkedin: '',
   },
+
+  // Lien direct vers le formulaire d'avis Google (adresse courte du site : /avis/).
+  avisGoogle: 'https://g.page/r/CWJzlxYXp70nEBM/review',
 
   // Mentions légales (source : registre national des entreprises, SIREN 803 219 997).
   legal: {

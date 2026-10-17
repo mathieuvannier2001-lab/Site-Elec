@@ -30,3 +30,17 @@
 # Prévient Bing (IndexNow) des pages nouvelles ou modifiées après chaque mise en ligne.
 [[plugins]]
   package = "/netlify/plugins/indexnow"
+
+# Adresse courte pour demander un avis : amcf-electricien.fr/avis
+# (302 pour pouvoir changer la destination plus tard sans cache).
+[[redirects]]
+  from = "/avis"
+  to = "https://g.page/r/CWJzlxYXp70nEBM/review"
+  status = 302
+  force = true
+
+[[redirects]]
+  from = "/avis/"
+  to = "https://g.page/r/CWJzlxYXp70nEBM/review"
+  status = 302
+  force = true
